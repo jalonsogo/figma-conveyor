@@ -235,13 +235,13 @@ async function updateInstanceProperties(node, headers, rowData) {
               // We'll use the CSV value as-is, but can also support boolean-style conversion
               let variantValue = cellValue;
               
-              console.log(`  VARIANT property detected. Options: ${propDef.variantOptions?.join(', ')}`);
+              console.log('  VARIANT property detected. Options: ' + (propDef.variantOptions ? propDef.variantOptions.join(', ') : 'none'));
               
               // Optional: Try to convert boolean-style values to yes/no for common use cases
               const lowerValue = cellValue.toLowerCase();
               if (propDef.variantOptions) {
                 // Check if the variant has 'yes'/'no' options
-                const hasYesNo = propDef.variantOptions.includes('yes') || propDef.variantOptions.includes('no');
+                const hasYesNo = propDef.variantOptions && (propDef.variantOptions.includes('yes') || propDef.variantOptions.includes('no'));
                 
                 if (hasYesNo) {
                   console.log('  Variant has yes/no options, attempting conversion');
