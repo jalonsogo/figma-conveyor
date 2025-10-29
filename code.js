@@ -250,8 +250,9 @@ async function updateInstanceProperties(node, headers, rowData) {
               console.log(`✓ Updated: "${propName}" = "${variantValue}"`);
             }
             // Handle INSTANCE_SWAP properties
-            else if (propValue.type === 'INSTANCE' && propDef.type === 'INSTANCE_SWAP') {
+            else if (propValue.type === 'INSTANCE_SWAP' && propDef.type === 'INSTANCE_SWAP') {
               const componentName = cellValue;
+              console.log(`  → Looking for component: "${componentName}"`);
               const targetComponent = await findComponentByName(componentName);
               
               if (targetComponent) {
