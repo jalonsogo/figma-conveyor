@@ -181,7 +181,8 @@ async function updateInstanceProperties(node, headers, rowData) {
       if (propDefs) {
         console.log('Property definitions:', Object.keys(propDefs).map(key => {
           const def = propDefs[key];
-          return `${def.name} (${def.type})`;
+          const defName = def.name || key; // Use key if name is undefined
+          return `${defName} (${def.type})`;
         }));
         
         // Iterate through component properties
@@ -191,8 +192,10 @@ async function updateInstanceProperties(node, headers, rowData) {
           const propDef = propDefs[propKey];
           if (!propDef) continue;
           
-          const propName = propDef.name;
-          console.log(`Checking property: ${propName} (type: ${propDef.type})`);
+          // For component sets, the property name might not be in propDef.name
+          // Use the propKey itself if name is undefined
+          const propName = propDef.name || propKey;
+          console.log(`Checking property: ${propName} (type: ${propDef.type})`, 'propKey:', propKey);
           
           // Find matching CSV column (case-insensitive)
           const headerIndex = headers.findIndex(header => 
@@ -200,7 +203,7 @@ async function updateInstanceProperties(node, headers, rowData) {
           );
           
           if (headerIndex === -1) {
-            console.log(`  No CSV column match for "${propName}"`);
+            console.log(`  No CSV column match for "${propName}". Available CSV columns:`, headers);
             continue;
           }
           
