@@ -351,7 +351,8 @@
 
   <div class="instructions">
     <strong>💡 Quick Tip:</strong>
-    Component text properties and text layer names are matched with CSV column headers (case-insensitive).
+    Component properties (text, boolean, and variant) are matched with CSV column headers (case-insensitive).<br>
+    Works with nested component instances too! Boolean and yes/no variants accept: true/false, yes/no, 1/0, on/off, enabled/disabled, active/inactive.
   </div>
   </div>
 
@@ -375,7 +376,7 @@
   <!-- About Tab -->
   <div class="tab-content" id="about-tab">
     <h2>About CSV Instance Generator</h2>
-    <span class="version">Version 1.0.0</span>
+    <span class="version">Version 1.1.0</span>
     
     <div class="about-content">
       <p>A Figma plugin that generates component instances from CSV data, automatically replacing text content with data from each CSV row.</p>
@@ -385,14 +386,16 @@
         <li>Select any component, component set, or instance</li>
         <li>Upload CSV files with your data</li>
         <li>Automatically creates instances for each CSV row</li>
-        <li>Maps CSV columns to text layers by matching names</li>
+        <li>Maps CSV columns to text, boolean, and variant properties</li>
+        <li>Supports component variants and component sets</li>
+        <li>Supports nested component instances</li>
         <li>Arranges instances vertically with proper spacing</li>
         <li>Preview CSV data before generating</li>
       </ul>
 
       <h3>🚀 How It Works</h3>
       <p><strong>1. Prepare Your Component</strong></p>
-      <p>Create a component with text properties or text layers named to match your CSV column headers.</p>
+      <p>Create a component with text or boolean properties named to match your CSV column headers.</p>
       
       <p><strong>2. Prepare Your CSV</strong></p>
       <p>First row should contain column headers that match your component property/layer names.</p>
@@ -401,24 +404,42 @@
       <p>Select your component, upload CSV, and click Generate Instances!</p>
 
       <h3>📋 Example CSV Format</h3>
-      <p><code>Name,Email,Role</code><br>
-      <code>John Doe,john@example.com,Designer</code><br>
-      <code>Jane Smith,jane@example.com,Developer</code></p>
+      <p><code>Name,Email,Role,Active</code><br>
+      <code>John Doe,john@example.com,Designer,true</code><br>
+      <code>Jane Smith,jane@example.com,Developer,yes</code></p>
+
+      <h3>🔘 Boolean & Variant Values</h3>
+      <p><strong>For Boolean Properties:</strong></p>
+      <p>Accepted TRUE: true, yes, 1, on, enabled, active<br>
+      Accepted FALSE: false, no, 0, off, disabled, inactive</p>
+      
+      <p><strong>For Variant Properties:</strong></p>
+      <p>Use the exact variant option name (e.g., "yes", "no", "active", "inactive")<br>
+      For yes/no variants: Boolean-style values are automatically converted (true→yes, false→no)</p>
+      
+      <p>All values are case-insensitive and work with main and nested components.</p>
 
       <h3>💡 Tips</h3>
       <ul>
-        <li>Use component text properties for easier instance customization</li>
-        <li>Column headers are case-insensitive ("name" matches "Name")</li>
-        <li>The plugin preserves text formatting from the component</li>
+        <li>Use component properties (text, boolean, variant) for easier customization</li>
+        <li>Column headers are case-insensitive ("active" matches "Active")</li>
+        <li>Boolean and yes/no variant values are flexible: use true/yes/1 or false/no/0</li>
+        <li>For other variants, use the exact option name from your component</li>
+        <li>Nested component properties are automatically updated</li>
+        <li>The plugin preserves formatting from the component</li>
         <li>You can undo with Cmd/Ctrl + Z</li>
       </ul>
 
       <h3>🔧 Technical Details</h3>
       <ul>
         <li>No network access required - all processing is local</li>
-        <li>Supports components, component sets, and instances</li>
+        <li>Supports components, component sets, variants, and instances</li>
         <li>Handles font loading automatically</li>
-        <li>Maps CSV columns to component text properties and text layers</li>
+        <li>Maps CSV columns to text, boolean, and variant properties</li>
+        <li>Recursively updates nested component instances</li>
+        <li>Smart boolean parsing with multiple accepted formats</li>
+        <li>Auto-converts boolean values to yes/no for variants</li>
+        <li>Properly handles variant property definitions</li>
       </ul>
 
       <h3>📝 License</h3>
@@ -620,10 +641,8 @@
     function updateGenerateButton() {
       if (csvData && componentSelected) {
         generateBtn.disabled = false;
-        document.getElementById('step3').classList.add('active');
       } else {
         generateBtn.disabled = true;
-        document.getElementById('step3').classList.remove('active');
       }
     }
 
