@@ -254,8 +254,15 @@ async function updateInstanceProperties(node, headers, rowData) {
               const componentNameOrKey = cellValue;
               console.log(`  → Swapping to: "${componentNameOrKey}"`);
               
-              // First, try to find the component in the document
+              // Strategy 1: Try to find the component in the document
               let targetComponent = await findComponentByName(componentNameOrKey);
+              
+              if (!targetComponent) {
+                // Strategy 2: Search through all instances in the document to find one
+                // that uses a component with this name (handles library components!)
+                console.log(`  → Searching all instances for component "${componentNameOrKey}"...`);
+                targetComponent = await findComponentFromAnyInstance(componentNameOrKey);
+              }
               
               if (targetComponent) {
                 try {
@@ -265,12 +272,9 @@ async function updateInstanceProperties(node, headers, rowData) {
                   console.error(`✗ Error swapping "${propName}":`, error.message);
                 }
               } else {
-                // Component not found locally
-                console.log(`  → Component "${componentNameOrKey}" not found in document`);
-                console.log(`  → For library components: They must be added to preferred values AND`);
-                console.log(`     at least one instance must exist in the document first`);
-                console.log(`  → Try: 1) Manually place one instance of "${componentNameOrKey}" in the file`);
-                console.log(`         2) Run the plugin again`);
+                console.log(`✗ Component "${componentNameOrKey}" not found`);
+                console.log(`  → Make sure: At least ONE instance in your document uses "${componentNameOrKey}"`);
+                console.log(`  → This can be in ANY component's instance swap property`);
               }
             }
           } catch (error) {
@@ -346,6 +350,74 @@ async function findComponentByName(componentName) {
   // Search all pages if not found in current page
   for (const page of figma.root.children) {
     component = findInNode(page);
+    if (component) return component;
+  }
+  
+  return null;
+}
+
+// Find a component by searching through all instance swap properties in the document
+// This finds library components that are used in ANY instance swap property
+async function findComponentFromAnyInstance(componentName) {
+  const nameLower = componentName.toLowerCase();
+  
+  const searchInNode = (node) => {
+    // Check if this is an instance with component properties
+    if (node.type === 'INSTANCE' && 'componentProperties' in node && node.mainComponent) {
+      const componentProps = node.componentProperties;
+      
+      // Get property definitions
+      let propDefs = null;
+      try {
+        if (node.mainComponent.parent && node.mainComponent.parent.type === 'COMPONENT_SET') {
+          propDefs = node.mainComponent.parent.componentPropertyDefinitions;
+        } else if (node.mainComponent.type === 'COMPONENT') {
+          propDefs = node.mainComponent.componentPropertyDefinitions;
+        }
+      } catch (error) {
+        // Ignore errors
+      }
+      
+      if (propDefs) {
+        // Check each INSTANCE_SWAP property
+        for (const [propKey, propValue] of Object.entries(componentProps)) {
+          if (!propValue || propValue.type !== 'INSTANCE_SWAP') continue;
+          
+          const propDef = propDefs[propKey];
+          if (!propDef || propDef.type !== 'INSTANCE_SWAP') continue;
+          
+          // Check if this property's current value has a mainComponent with matching name
+          if (propValue.value && typeof propValue.value === 'object') {
+            // The value is an instance - get its mainComponent
+            const currentInstance = figma.getNodeById(propValue.value);
+            if (currentInstance && currentInstance.type === 'INSTANCE' && currentInstance.mainComponent) {
+              if (currentInstance.mainComponent.name.toLowerCase() === nameLower) {
+                return currentInstance.mainComponent;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // Recursively search children
+    if ('children' in node) {
+      for (const child of node.children) {
+        const found = searchInNode(child);
+        if (found) return found;
+      }
+    }
+    
+    return null;
+  };
+  
+  // Search current page
+  let component = searchInNode(figma.currentPage);
+  if (component) return component;
+  
+  // Search all pages
+  for (const page of figma.root.children) {
+    component = searchInNode(page);
     if (component) return component;
   }
   
