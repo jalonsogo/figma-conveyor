@@ -108,4 +108,4 @@ Bob Johnson,bob@example.com,Manager,false,offline,sheet
 
 ## 📝 License
 
-MIT License - Free to use and modify
+This plugin is provided as-is for design workflow enhancement.
