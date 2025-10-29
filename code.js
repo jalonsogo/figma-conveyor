@@ -340,6 +340,11 @@ async function findComponentByName(componentName) {
     // Also check instances - if we find an instance with matching mainComponent name,
     // we can use its mainComponent (this handles library components!)
     if (node.type === 'INSTANCE' && node.mainComponent) {
+      // Log what we're comparing
+      if (node.mainComponent.name.toLowerCase().includes(nameLower.substring(0, 3))) {
+        console.log(`${indent}  Checking instance: "${node.name}" with mainComponent: "${node.mainComponent.name}"`);
+      }
+      
       if (node.mainComponent.name.toLowerCase() === nameLower) {
         console.log(`${indent}✓ Found INSTANCE with mainComponent: "${node.mainComponent.name}" (id: ${node.mainComponent.id})`);
         return node.mainComponent;
