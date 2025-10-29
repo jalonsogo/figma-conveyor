@@ -1,7 +1,44 @@
 // Show the plugin UI
-figma.showUI(__html__, { width: 400, height: 500 });
+figma.showUI(__html__, { width: 400, height: 650 });
 
 let selectedComponent = null;
+
+// CSV Storage Functions
+const csvStorage = {
+  async storeCsv(name, csvData) {
+    const id = `csv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const entry = {
+      id,
+      name,
+      csvData,
+      createdAt: new Date().toISOString(),
+      rowCount: csvData.length - 1,
+      columnCount: csvData[0].length
+    };
+
+    // Get existing entries
+    const stored = await figma.clientStorage.getAsync('csvEntries') || [];
+    stored.push(entry);
+    await figma.clientStorage.setAsync('csvEntries', stored);
+
+    return id;
+  },
+
+  async listCsvs() {
+    return await figma.clientStorage.getAsync('csvEntries') || [];
+  },
+
+  async getCsv(id) {
+    const stored = await figma.clientStorage.getAsync('csvEntries') || [];
+    return stored.find(entry => entry.id === id);
+  },
+
+  async deleteCsv(id) {
+    const stored = await figma.clientStorage.getAsync('csvEntries') || [];
+    const filtered = stored.filter(entry => entry.id !== id);
+    await figma.clientStorage.setAsync('csvEntries', filtered);
+  }
+};
 
 // Listen for messages from the UI
 figma.ui.onmessage = async (msg) => {
@@ -74,6 +111,67 @@ figma.ui.onmessage = async (msg) => {
 
   if (msg.type === 'cancel') {
     figma.closePlugin();
+  }
+
+  // CSV Storage Operations
+  if (msg.type === 'store-csv') {
+    try {
+      const id = await csvStorage.storeCsv(msg.name, msg.csvData);
+      figma.ui.postMessage({
+        type: 'csv-stored',
+        id: id
+      });
+    } catch (error) {
+      figma.ui.postMessage({
+        type: 'storage-error',
+        message: error.message
+      });
+    }
+  }
+
+  if (msg.type === 'list-csvs') {
+    try {
+      const list = await csvStorage.listCsvs();
+      figma.ui.postMessage({
+        type: 'csv-list',
+        list: list,
+        autoSelectId: msg.autoSelectId || null
+      });
+    } catch (error) {
+      figma.ui.postMessage({
+        type: 'storage-error',
+        message: error.message
+      });
+    }
+  }
+
+  if (msg.type === 'preview-csv') {
+    try {
+      const source = await csvStorage.getCsv(msg.id);
+      figma.ui.postMessage({
+        type: 'csv-preview',
+        source: source
+      });
+    } catch (error) {
+      figma.ui.postMessage({
+        type: 'storage-error',
+        message: error.message
+      });
+    }
+  }
+
+  if (msg.type === 'delete-csv') {
+    try {
+      await csvStorage.deleteCsv(msg.id);
+      figma.ui.postMessage({
+        type: 'csv-deleted'
+      });
+    } catch (error) {
+      figma.ui.postMessage({
+        type: 'storage-error',
+        message: error.message
+      });
+    }
   }
 };
 
