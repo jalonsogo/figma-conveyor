@@ -255,10 +255,12 @@ async function updateInstanceProperties(node, headers, rowData) {
               console.log(`  → Swapping to: "${componentNameOrKey}"`);
               
               // Strategy 1: Try to find the component in the document
+              console.log(`  → Strategy 1: Searching document...`);
               let targetComponent = await findComponentByName(componentNameOrKey);
               
               if (!targetComponent) {
                 // Strategy 2: Search through all instances in the document
+                console.log(`  → Strategy 1 failed, trying Strategy 2...`);
                 console.log(`  → Searching all instances for component "${componentNameOrKey}"...`);
                 targetComponent = await findComponentFromAnyInstance(componentNameOrKey);
               }
