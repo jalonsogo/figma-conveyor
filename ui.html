@@ -351,8 +351,8 @@
 
   <div class="instructions">
     <strong>💡 Quick Tip:</strong>
-    Component properties (text and boolean) are matched with CSV column headers (case-insensitive).<br>
-    Works with nested component instances too! Boolean properties accept: true/false, yes/no, 1/0, on/off, enabled/disabled, active/inactive.
+    Component properties (text, boolean, and variant) are matched with CSV column headers (case-insensitive).<br>
+    Works with nested component instances too! Boolean and yes/no variants accept: true/false, yes/no, 1/0, on/off, enabled/disabled, active/inactive.
   </div>
   </div>
 
@@ -386,7 +386,7 @@
         <li>Select any component, component set, or instance</li>
         <li>Upload CSV files with your data</li>
         <li>Automatically creates instances for each CSV row</li>
-        <li>Maps CSV columns to text and boolean properties</li>
+        <li>Maps CSV columns to text, boolean, and variant properties</li>
         <li>Supports component variants and component sets</li>
         <li>Supports nested component instances</li>
         <li>Arranges instances vertically with proper spacing</li>
@@ -408,16 +408,23 @@
       <code>John Doe,john@example.com,Designer,true</code><br>
       <code>Jane Smith,jane@example.com,Developer,yes</code></p>
 
-      <h3>🔘 Boolean Values</h3>
-      <p><strong>Accepted TRUE values:</strong> true, yes, 1, on, enabled, active</p>
-      <p><strong>Accepted FALSE values:</strong> false, no, 0, off, disabled, inactive</p>
-      <p>Values are case-insensitive. Works with boolean properties in main and nested components.</p>
+      <h3>🔘 Boolean & Variant Values</h3>
+      <p><strong>For Boolean Properties:</strong></p>
+      <p>Accepted TRUE: true, yes, 1, on, enabled, active<br>
+      Accepted FALSE: false, no, 0, off, disabled, inactive</p>
+      
+      <p><strong>For Variant Properties:</strong></p>
+      <p>Use the exact variant option name (e.g., "yes", "no", "active", "inactive")<br>
+      For yes/no variants: Boolean-style values are automatically converted (true→yes, false→no)</p>
+      
+      <p>All values are case-insensitive and work with main and nested components.</p>
 
       <h3>💡 Tips</h3>
       <ul>
-        <li>Use component text and boolean properties for easier customization</li>
-        <li>Column headers are case-insensitive ("name" matches "Name")</li>
-        <li>Boolean values are flexible: use true/yes/1 or false/no/0</li>
+        <li>Use component properties (text, boolean, variant) for easier customization</li>
+        <li>Column headers are case-insensitive ("active" matches "Active")</li>
+        <li>Boolean and yes/no variant values are flexible: use true/yes/1 or false/no/0</li>
+        <li>For other variants, use the exact option name from your component</li>
         <li>Nested component properties are automatically updated</li>
         <li>The plugin preserves formatting from the component</li>
         <li>You can undo with Cmd/Ctrl + Z</li>
@@ -428,9 +435,10 @@
         <li>No network access required - all processing is local</li>
         <li>Supports components, component sets, variants, and instances</li>
         <li>Handles font loading automatically</li>
-        <li>Maps CSV columns to text and boolean properties</li>
+        <li>Maps CSV columns to text, boolean, and variant properties</li>
         <li>Recursively updates nested component instances</li>
         <li>Smart boolean parsing with multiple accepted formats</li>
+        <li>Auto-converts boolean values to yes/no for variants</li>
         <li>Properly handles variant property definitions</li>
       </ul>
 

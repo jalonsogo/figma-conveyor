@@ -207,6 +207,34 @@ async function updateInstanceProperties(node, headers, rowData) {
                 [propKey]: boolValue
               });
             }
+            // Handle VARIANT properties
+            else if (propValue.type === 'VARIANT' && propDef.type === 'VARIANT') {
+              // For variants, the value should match one of the variant options
+              // We'll use the CSV value as-is, but can also support boolean-style conversion
+              let variantValue = cellValue;
+              
+              // Optional: Try to convert boolean-style values to yes/no for common use cases
+              const lowerValue = cellValue.toLowerCase();
+              if (propDef.variantOptions) {
+                // Check if the variant has 'yes'/'no' options
+                const hasYesNo = propDef.variantOptions.includes('yes') || propDef.variantOptions.includes('no');
+                
+                if (hasYesNo) {
+                  // Convert boolean-style values to yes/no
+                  if (lowerValue === 'true' || lowerValue === '1' || lowerValue === 'on' || 
+                      lowerValue === 'enabled' || lowerValue === 'active') {
+                    variantValue = 'yes';
+                  } else if (lowerValue === 'false' || lowerValue === '0' || lowerValue === 'off' || 
+                             lowerValue === 'disabled' || lowerValue === 'inactive') {
+                    variantValue = 'no';
+                  }
+                }
+              }
+              
+              node.setProperties({
+                [propKey]: variantValue
+              });
+            }
           } catch (error) {
             console.error(`Error updating component property ${propName}:`, error);
           }

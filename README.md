@@ -1,4 +1,23 @@
-### Nested Components
+### Variant Value Handling
+
+The plugin intelligently handles variant properties:
+
+**Direct Matching:**
+- CSV value matches variant option name exactly (case-insensitive)
+- Example: CSV "online" → Variant option "online"
+
+**Boolean to Yes/No Conversion:**
+- For variants with "yes"/"no" options, boolean-style values are auto-converted
+- `true`, `1`, `on`, `enabled`, `active` → "yes"
+- `false`, `0`, `off`, `disabled`, `inactive` → "no"
+- Perfect for variants like "Active=yes/no", "Visible=yes/no", etc.
+
+**Example:**
+```csv
+Name,Active,Status
+John,true,online    # Active variant becomes "yes", Status becomes "online"
+Jane,false,away     # Active variant becomes "no", Status becomes "away"
+```### Nested Components
 
 The plugin automatically traverses and updates nested component instances. If your main component contains other component instances, their properties will also be updated based on CSV column names.
 
@@ -17,8 +36,9 @@ A powerful Figma plugin that automates the creation of component instances from 
 
 - 📦 **Component Support** - Works with components, component sets, variants, and instances
 - 📄 **CSV Import** - Upload CSV files via click or drag & drop
-- 🔄 **Automatic Mapping** - Matches CSV columns to component text and boolean properties by name
+- 🔄 **Automatic Mapping** - Matches CSV columns to component text, boolean, and variant properties by name
 - 🔘 **Boolean Support** - Automatically converts CSV values to boolean properties (true/false, yes/no, 1/0, etc.)
+- 🎭 **Variant Support** - Works with variant properties, auto-converts boolean values to yes/no variants
 - 🎭 **Nested Components** - Updates properties in nested component instances automatically
 - 🎨 **Smart Layout** - Arranges instances vertically with proper spacing
 - 👀 **Live Preview** - Preview your CSV data before generating instances
@@ -46,7 +66,7 @@ Create a Figma component with text and/or boolean properties. Name them to match
 - Text property: `Email`
 - Text property: `Role`
 - Boolean property: `Active`
-- Boolean property: `Premium`
+- Variant property: `Status` (with options: "online", "offline", "away")
 
 > 💡 **Tip:** Component properties (exposed properties) are recommended for easier instance customization.
 
@@ -55,16 +75,21 @@ Create a Figma component with text and/or boolean properties. Name them to match
 Create a CSV file with headers in the first row that match your component property names.
 
 ```csv
-Name,Email,Role,Active,Premium
-John Doe,john@example.com,Designer,true,yes
-Jane Smith,jane@example.com,Developer,1,on
-Bob Johnson,bob@example.com,Manager,false,no
+Name,Email,Role,Active,Status
+John Doe,john@example.com,Designer,true,online
+Jane Smith,jane@example.com,Developer,yes,away
+Bob Johnson,bob@example.com,Manager,false,offline
 ```
 
 **Boolean Values:**
-The plugin accepts multiple formats for boolean values:
+The plugin accepts multiple formats for boolean properties:
 - **TRUE:** `true`, `yes`, `1`, `on`, `enabled`, `active` (case-insensitive)
 - **FALSE:** `false`, `no`, `0`, `off`, `disabled`, `inactive` (case-insensitive)
+
+**Variant Values:**
+For variant properties:
+- Use the exact variant option name (e.g., "online", "offline", "away")
+- For yes/no variants: Boolean-style values are automatically converted (true→yes, false→no)
 
 See `example.csv` for a sample file.
 
@@ -86,10 +111,11 @@ The plugin uses intelligent name-based matching:
 
 1. **Component Text Properties** - Text properties are matched with CSV column headers containing text values
 2. **Component Boolean Properties** - Boolean properties are matched with CSV column headers containing boolean values
-3. **Nested Component Properties** - Properties in nested component instances are also matched and updated
-4. **Text Layer Names** - Text layers in the component are matched with CSV column headers
-5. **Case-Insensitive** - Matching works regardless of case (e.g., "name" matches "Name")
-6. **Column Order Independent** - Column order in CSV doesn't matter, only names need to match
+3. **Component Variant Properties** - Variant properties are matched with CSV column headers containing variant option names
+4. **Nested Component Properties** - Properties in nested component instances are also matched and updated
+5. **Text Layer Names** - Text layers in the component are matched with CSV column headers
+6. **Case-Insensitive** - Matching works regardless of case (e.g., "active" matches "Active")
+7. **Column Order Independent** - Column order in CSV doesn't matter, only names need to match
 
 ### Boolean Value Parsing
 
@@ -107,9 +133,10 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 | Name | "Name" | TEXT | "John Doe" | ✅ Matched & Updated |
 | email | "Email" | TEXT | "john@example.com" | ✅ Matched (case-insensitive) |
 | Active | "Active" | BOOLEAN | "yes" | ✅ Converted to true |
-| Premium | "Premium" | BOOLEAN | "1" | ✅ Converted to true |
+| Status | "Status" | VARIANT | "online" | ✅ Matched to variant option |
+| Active | "Active" (yes/no variant) | VARIANT | "true" | ✅ Converted to "yes" |
 | Visible | "Visible" (nested) | BOOLEAN | "true" | ✅ Updated in nested instance |
-| Status | "Description" | TEXT | "Active" | ❌ Not matched (different names) |
+| State | "Description" | TEXT | "Active" | ❌ Not matched (different names) |
 
 ## 📋 Plugin Interface
 
@@ -133,9 +160,10 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 - **API Version:** Figma Plugin API 1.0.0
 - **No Network Access** - All processing is local
 - **Supported Node Types:** Components, component sets, variants, instances
-- **Supported Property Types:** TEXT, BOOLEAN
+- **Supported Property Types:** TEXT, BOOLEAN, VARIANT
 - **Nested Component Support** - Recursively updates all nested instances
 - **Variant Support** - Properly handles component sets and variant property definitions
+- **Boolean to Variant Conversion** - Auto-converts boolean values to yes/no for variants
 - **Font Handling:** Automatic font loading for text updates
 - **CSV Parsing:** Handles quoted values, commas in fields, empty cells
 - **Boolean Parsing:** Flexible parsing with multiple accepted formats
@@ -153,12 +181,13 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 
 ### For Best Results
 
-1. **Use Component Properties** - Expose text and boolean properties in your component for easier instance management
+1. **Use Component Properties** - Expose text, boolean, and variant properties in your component for easier instance management
 2. **Name Consistently** - Use the same naming convention in both CSV and component
 3. **Boolean Formats** - Use any accepted boolean format (true/false, yes/no, 1/0, etc.)
-4. **Leverage Nesting** - Use nested components with properties for modular designs
-5. **Test with Small Data First** - Try with 2-3 rows before processing large datasets
-6. **Keep Backup** - The plugin supports undo (Cmd/Ctrl + Z), but save your work first
+4. **Variant Values** - Use exact variant option names, or boolean-style values for yes/no variants
+5. **Leverage Nesting** - Use nested components with properties for modular designs
+6. **Test with Small Data First** - Try with 2-3 rows before processing large datasets
+7. **Keep Backup** - The plugin supports undo (Cmd/Ctrl + Z), but save your work first
 
 ### Common Use Cases
 
@@ -188,6 +217,13 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 - CSV value format not recognized - use: true/false, yes/no, 1/0, on/off, etc.
 - Property name doesn't match CSV header (case-insensitive)
 - Check that the component property is exposed
+
+### Variant Properties Not Updating
+**Possible causes:**
+- CSV value doesn't match any variant option (check spelling)
+- For yes/no variants: boolean-style values should auto-convert
+- Property name doesn't match CSV header (case-insensitive)
+- Nested variant might be in a nested instance - ensure it's exposed
 
 ### Font Errors
 **Solution:** The plugin attempts to load fonts automatically. If you encounter font errors:
@@ -226,8 +262,9 @@ csv-instance-generator/
 **code.js**
 - Main plugin logic running in Figma's sandbox
 - Handles component selection and instance creation
-- Manages text and boolean property updates
+- Manages text, boolean, and variant property updates
 - Recursively updates nested component instances
+- Auto-converts boolean values to yes/no for variants
 - Font loading for text layers
 - Communicates with UI via postMessage
 
@@ -293,8 +330,9 @@ If you encounter issues or have questions:
 Future enhancements under consideration:
 
 - [x] Support for boolean properties
+- [x] Support for variant properties with yes/no conversion
 - [ ] Support for image URLs in CSV (populate image layers)
-- [ ] Support for variant properties
+- [ ] Support for instance swap properties
 - [ ] Custom spacing and layout options
 - [ ] Export instances back to CSV
 - [ ] Batch operations (update existing instances)
