@@ -156,6 +156,9 @@ async function updateInstanceProperties(node, headers, rowData) {
     const componentProps = node.componentProperties;
     const mainComponent = node.mainComponent;
     
+    console.log(`Processing instance: ${node.name}`);
+    console.log('Component properties:', Object.keys(componentProps));
+    
     if (mainComponent) {
       // Get property definitions - need to handle variants properly
       let propDefs = null;
@@ -165,15 +168,22 @@ async function updateInstanceProperties(node, headers, rowData) {
         if (mainComponent.parent && mainComponent.parent.type === 'COMPONENT_SET') {
           // For variants, get definitions from the parent component set
           propDefs = mainComponent.parent.componentPropertyDefinitions;
+          console.log('Getting definitions from component set');
         } else if (mainComponent.type === 'COMPONENT') {
           // For regular components, get definitions directly
           propDefs = mainComponent.componentPropertyDefinitions;
+          console.log('Getting definitions from component');
         }
       } catch (error) {
         console.error('Error accessing component property definitions:', error);
       }
       
       if (propDefs) {
+        console.log('Property definitions:', Object.keys(propDefs).map(key => {
+          const def = propDefs[key];
+          return `${def.name} (${def.type})`;
+        }));
+        
         // Iterate through component properties
         for (const [propKey, propValue] of Object.entries(componentProps)) {
           if (!propValue || typeof propValue !== 'object' || !('type' in propValue)) continue;
@@ -182,19 +192,30 @@ async function updateInstanceProperties(node, headers, rowData) {
           if (!propDef) continue;
           
           const propName = propDef.name;
+          console.log(`Checking property: ${propName} (type: ${propDef.type})`);
           
           // Find matching CSV column (case-insensitive)
           const headerIndex = headers.findIndex(header => 
             header && propName && header.toLowerCase().trim() === propName.toLowerCase().trim()
           );
           
-          if (headerIndex === -1 || rowData[headerIndex] === undefined || rowData[headerIndex] === null) continue;
+          if (headerIndex === -1) {
+            console.log(`  No CSV column match for "${propName}"`);
+            continue;
+          }
+          
+          if (rowData[headerIndex] === undefined || rowData[headerIndex] === null) {
+            console.log(`  CSV column "${headers[headerIndex]}" has no value`);
+            continue;
+          }
           
           const cellValue = String(rowData[headerIndex]).trim();
+          console.log(`  Matched! CSV column "${headers[headerIndex]}" = "${cellValue}"`);
           
           try {
             // Handle TEXT properties
             if (propValue.type === 'TEXT' && propDef.type === 'TEXT') {
+              console.log(`  Setting TEXT property to: ${cellValue}`);
               node.setProperties({
                 [propKey]: cellValue
               });
@@ -203,6 +224,7 @@ async function updateInstanceProperties(node, headers, rowData) {
             else if (propValue.type === 'BOOLEAN' && propDef.type === 'BOOLEAN') {
               // Convert string to boolean
               const boolValue = parseBooleanValue(cellValue);
+              console.log(`  Setting BOOLEAN property to: ${boolValue}`);
               node.setProperties({
                 [propKey]: boolValue
               });
@@ -213,6 +235,8 @@ async function updateInstanceProperties(node, headers, rowData) {
               // We'll use the CSV value as-is, but can also support boolean-style conversion
               let variantValue = cellValue;
               
+              console.log(`  VARIANT property detected. Options: ${propDef.variantOptions?.join(', ')}`);
+              
               // Optional: Try to convert boolean-style values to yes/no for common use cases
               const lowerValue = cellValue.toLowerCase();
               if (propDef.variantOptions) {
@@ -220,17 +244,19 @@ async function updateInstanceProperties(node, headers, rowData) {
                 const hasYesNo = propDef.variantOptions.includes('yes') || propDef.variantOptions.includes('no');
                 
                 if (hasYesNo) {
+                  console.log('  Variant has yes/no options, attempting conversion');
                   // Convert boolean-style values to yes/no
                   if (lowerValue === 'true' || lowerValue === '1' || lowerValue === 'on' || 
-                      lowerValue === 'enabled' || lowerValue === 'active') {
+                      lowerValue === 'enabled' || lowerValue === 'active' || lowerValue === 'yes') {
                     variantValue = 'yes';
                   } else if (lowerValue === 'false' || lowerValue === '0' || lowerValue === 'off' || 
-                             lowerValue === 'disabled' || lowerValue === 'inactive') {
+                             lowerValue === 'disabled' || lowerValue === 'inactive' || lowerValue === 'no') {
                     variantValue = 'no';
                   }
                 }
               }
               
+              console.log(`  Setting VARIANT property to: "${variantValue}"`);
               node.setProperties({
                 [propKey]: variantValue
               });
