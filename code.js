@@ -327,6 +327,11 @@ async function findComponentByName(componentName) {
   const findInNode = (node, depth = 0) => {
     const indent = '    '.repeat(depth);
     
+    // Log what we're checking
+    if (depth === 0 || (depth === 1 && 'children' in node)) {
+      console.log(`${indent}Checking: ${node.name} (type: ${node.type})`);
+    }
+    
     // Check if it's a component or component set with matching name
     if ((node.type === 'COMPONENT' || node.type === 'COMPONENT_SET') && 
         node.name.toLowerCase() === nameLower) {
@@ -336,10 +341,11 @@ async function findComponentByName(componentName) {
     
     // Also check instances - if we find an instance with matching mainComponent name,
     // we can use its mainComponent (this handles library components!)
-    if (node.type === 'INSTANCE' && node.mainComponent && 
-        node.mainComponent.name.toLowerCase() === nameLower) {
-      console.log(`${indent}✓ Found INSTANCE with mainComponent: "${node.mainComponent.name}" (id: ${node.mainComponent.id})`);
-      return node.mainComponent;
+    if (node.type === 'INSTANCE' && node.mainComponent) {
+      if (node.mainComponent.name.toLowerCase() === nameLower) {
+        console.log(`${indent}✓ Found INSTANCE with mainComponent: "${node.mainComponent.name}" (id: ${node.mainComponent.id})`);
+        return node.mainComponent;
+      }
     }
     
     if ('children' in node) {
@@ -352,17 +358,11 @@ async function findComponentByName(componentName) {
     return null;
   };
   
-  // Search current page
-  console.log(`  → Searching current page...`);
-  let component = findInNode(figma.currentPage);
-  if (component) return component;
-  
-  // Search all pages if not found in current page
+  // Search ALL pages (not just current page first)
   console.log(`  → Searching all pages...`);
   for (const page of figma.root.children) {
-    if (page === figma.currentPage) continue; // Already searched
     console.log(`  → Searching page: "${page.name}"`);
-    component = findInNode(page);
+    const component = findInNode(page);
     if (component) return component;
   }
   
