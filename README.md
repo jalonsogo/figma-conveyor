@@ -1,4 +1,44 @@
-### Variant Value Handling
+### Instance Swap Not Working
+**Possible causes:**
+- Component name in CSV doesn't match any component in Figma
+- Check spelling and exact component name (case-insensitive but must match)
+- Component might be in a different page - plugin searches all pages
+- Ensure the property type is INSTANCE_SWAP (not TEXT or VARIANT)
+- Check console logs to see what components are being searched
+
+**Debug steps:**
+1. Open console: Plugins → Development → Open Console
+2. Look for "Looking for component with name" messages
+3. Verify component exists with exact name in Figma
+4. Try using the component name exactly as it appears in layers panel### Instance Swap Handling
+
+The plugin supports instance swap properties for dynamic component replacement:
+
+**How It Works:**
+- CSV value contains the name of a component to swap to
+- Plugin searches the entire Figma document for a component with that name
+- Component name matching is case-insensitive
+- Perfect for icons, avatars, illustrations, badges, etc.
+
+**Example:**
+```csv
+Name,Icon,Avatar
+John,shapes,profile-male
+Jane,share,profile-female  
+Bob,sheet,profile-default
+```
+
+**Requirements:**
+- Components must exist in your Figma file (any page)
+- Component names in CSV must match Figma component names
+- Works with both regular components and component sets
+
+**Common Use Cases:**
+- **Icons** - Swap different icon components (shapes, share, settings, etc.)
+- **Avatars** - Swap different avatar/profile images
+- **Illustrations** - Change illustrations based on context
+- **Badges** - Swap different badge/label designs
+- **Status Indicators** - Different visual indicators per state### Variant Value Handling
 
 The plugin intelligently handles variant properties:
 
@@ -36,9 +76,10 @@ A powerful Figma plugin that automates the creation of component instances from 
 
 - 📦 **Component Support** - Works with components, component sets, variants, and instances
 - 📄 **CSV Import** - Upload CSV files via click or drag & drop
-- 🔄 **Automatic Mapping** - Matches CSV columns to component text, boolean, and variant properties by name
+- 🔄 **Automatic Mapping** - Matches CSV columns to component text, boolean, variant, and instance swap properties by name
 - 🔘 **Boolean Support** - Automatically converts CSV values to boolean properties (true/false, yes/no, 1/0, etc.)
 - 🎭 **Variant Support** - Works with variant properties, auto-converts boolean values to yes/no variants
+- 🔀 **Instance Swap Support** - Swap component instances by name (perfect for icons, avatars, etc.)
 - 🎭 **Nested Components** - Updates properties in nested component instances automatically
 - 🎨 **Smart Layout** - Arranges instances vertically with proper spacing
 - 👀 **Live Preview** - Preview your CSV data before generating instances
@@ -67,6 +108,7 @@ Create a Figma component with text and/or boolean properties. Name them to match
 - Text property: `Role`
 - Boolean property: `Active`
 - Variant property: `Status` (with options: "online", "offline", "away")
+- Instance swap property: `Icon` (with preferred values: shapes, share, sheet, etc.)
 
 > 💡 **Tip:** Component properties (exposed properties) are recommended for easier instance customization.
 
@@ -75,10 +117,10 @@ Create a Figma component with text and/or boolean properties. Name them to match
 Create a CSV file with headers in the first row that match your component property names.
 
 ```csv
-Name,Email,Role,Active,Status
-John Doe,john@example.com,Designer,true,online
-Jane Smith,jane@example.com,Developer,yes,away
-Bob Johnson,bob@example.com,Manager,false,offline
+Name,Email,Role,Active,Status,Icon
+John Doe,john@example.com,Designer,true,online,shapes
+Jane Smith,jane@example.com,Developer,yes,away,share
+Bob Johnson,bob@example.com,Manager,false,offline,sheet
 ```
 
 **Boolean Values:**
@@ -90,6 +132,12 @@ The plugin accepts multiple formats for boolean properties:
 For variant properties:
 - Use the exact variant option name (e.g., "online", "offline", "away")
 - For yes/no variants: Boolean-style values are automatically converted (true→yes, false→no)
+
+**Instance Swap Values:**
+For instance swap properties (e.g., Icon):
+- Use the component name exactly as it appears in Figma (case-insensitive)
+- The plugin searches the entire document for matching components
+- Perfect for swapping icons, avatars, illustrations, etc.
 
 See `example.csv` for a sample file.
 
@@ -112,10 +160,11 @@ The plugin uses intelligent name-based matching:
 1. **Component Text Properties** - Text properties are matched with CSV column headers containing text values
 2. **Component Boolean Properties** - Boolean properties are matched with CSV column headers containing boolean values
 3. **Component Variant Properties** - Variant properties are matched with CSV column headers containing variant option names
-4. **Nested Component Properties** - Properties in nested component instances are also matched and updated
-5. **Text Layer Names** - Text layers in the component are matched with CSV column headers
-6. **Case-Insensitive** - Matching works regardless of case (e.g., "active" matches "Active")
-7. **Column Order Independent** - Column order in CSV doesn't matter, only names need to match
+4. **Component Instance Swap Properties** - Instance swap properties are matched with CSV column headers containing component names
+5. **Nested Component Properties** - Properties in nested component instances are also matched and updated
+6. **Text Layer Names** - Text layers in the component are matched with CSV column headers
+7. **Case-Insensitive** - Matching works regardless of case (e.g., "active" matches "Active", "shapes" matches "Shapes")
+8. **Column Order Independent** - Column order in CSV doesn't matter, only names need to match
 
 ### Boolean Value Parsing
 
@@ -135,6 +184,7 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 | Active | "Active" | BOOLEAN | "yes" | ✅ Converted to true |
 | Status | "Status" | VARIANT | "online" | ✅ Matched to variant option |
 | Active | "Active" (yes/no variant) | VARIANT | "true" | ✅ Converted to "yes" |
+| Icon | "Icon" | INSTANCE_SWAP | "shapes" | ✅ Swapped to shapes component |
 | Visible | "Visible" (nested) | BOOLEAN | "true" | ✅ Updated in nested instance |
 | State | "Description" | TEXT | "Active" | ❌ Not matched (different names) |
 
@@ -160,10 +210,11 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 - **API Version:** Figma Plugin API 1.0.0
 - **No Network Access** - All processing is local
 - **Supported Node Types:** Components, component sets, variants, instances
-- **Supported Property Types:** TEXT, BOOLEAN, VARIANT
+- **Supported Property Types:** TEXT, BOOLEAN, VARIANT, INSTANCE_SWAP
 - **Nested Component Support** - Recursively updates all nested instances
 - **Variant Support** - Properly handles component sets and variant property definitions
 - **Boolean to Variant Conversion** - Auto-converts boolean values to yes/no for variants
+- **Instance Swap Support** - Find and swap components by name across entire document
 - **Font Handling:** Automatic font loading for text updates
 - **CSV Parsing:** Handles quoted values, commas in fields, empty cells
 - **Boolean Parsing:** Flexible parsing with multiple accepted formats
@@ -181,21 +232,23 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 
 ### For Best Results
 
-1. **Use Component Properties** - Expose text, boolean, and variant properties in your component for easier instance management
+1. **Use Component Properties** - Expose text, boolean, variant, and instance swap properties in your component for easier instance management
 2. **Name Consistently** - Use the same naming convention in both CSV and component
 3. **Boolean Formats** - Use any accepted boolean format (true/false, yes/no, 1/0, etc.)
 4. **Variant Values** - Use exact variant option names, or boolean-style values for yes/no variants
-5. **Leverage Nesting** - Use nested components with properties for modular designs
-6. **Test with Small Data First** - Try with 2-3 rows before processing large datasets
-7. **Keep Backup** - The plugin supports undo (Cmd/Ctrl + Z), but save your work first
+5. **Instance Swap** - Use exact component names as they appear in Figma (case-insensitive)
+6. **Leverage Nesting** - Use nested components with properties for modular designs
+7. **Test with Small Data First** - Try with 2-3 rows before processing large datasets
+8. **Keep Backup** - The plugin supports undo (Cmd/Ctrl + Z), but save your work first
 
 ### Common Use Cases
 
-- **User Cards** - Generate user profile cards with names, emails, avatars, and active status
-- **Product Lists** - Create product cards with titles, descriptions, prices, and availability flags
-- **Team Directories** - Build team member cards with roles, contact info, and online status
+- **User Cards** - Generate user profile cards with names, emails, avatars (instance swap), and active status
+- **Product Lists** - Create product cards with titles, descriptions, prices, icons (instance swap), and availability flags
+- **Team Directories** - Build team member cards with roles, contact info, custom avatars (instance swap), and online status
+- **Icon Libraries** - Test icon components by swapping different icons in layouts
 - **Feature Flags** - Design UI with toggleable features using nested badge/indicator components
-- **A/B Testing** - Create multiple variations of designs with different boolean states
+- **A/B Testing** - Create multiple variations of designs with different boolean states and swapped elements
 - **Status Indicators** - Generate elements with active/inactive, on/off states in nested components
 - **Notification Badges** - Control visibility of nested notification/badge components
 
@@ -331,13 +384,14 @@ Future enhancements under consideration:
 
 - [x] Support for boolean properties
 - [x] Support for variant properties with yes/no conversion
+- [x] Support for instance swap properties
 - [ ] Support for image URLs in CSV (populate image layers)
-- [ ] Support for instance swap properties
 - [ ] Custom spacing and layout options
 - [ ] Export instances back to CSV
 - [ ] Batch operations (update existing instances)
 - [ ] Excel file support (.xlsx)
 - [ ] Template saving and reuse
+- [ ] Component search optimization for large files
 
 ## 🙏 Acknowledgments
 

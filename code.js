@@ -264,6 +264,31 @@ async function updateInstanceProperties(node, headers, rowData) {
                 [propKey]: variantValue
               });
             }
+            // Handle INSTANCE_SWAP properties
+            else if (propValue.type === 'INSTANCE' && propDef.type === 'INSTANCE_SWAP') {
+              console.log('  INSTANCE_SWAP property detected');
+              
+              // Find the component by name from the CSV value
+              const componentName = cellValue;
+              console.log(`  Looking for component with name: "${componentName}"`);
+              
+              // Search for the component in the document
+              const targetComponent = await findComponentByName(componentName);
+              
+              if (targetComponent) {
+                console.log(`  Found component: ${targetComponent.name} (${targetComponent.id})`);
+                try {
+                  node.setProperties({
+                    [propKey]: targetComponent
+                  });
+                  console.log(`  Successfully swapped instance to: ${targetComponent.name}`);
+                } catch (error) {
+                  console.error(`  Error swapping instance:`, error);
+                }
+              } else {
+                console.log(`  Component "${componentName}" not found in document`);
+              }
+            }
           } catch (error) {
             console.error(`Error updating component property ${propName}:`, error);
           }
@@ -298,4 +323,36 @@ function parseBooleanValue(value) {
   
   // Default to false for unrecognized values
   return false;
+}
+
+// Find a component by name in the document
+async function findComponentByName(componentName) {
+  // Search in the current page first
+  const findInNode = (node) => {
+    if ((node.type === 'COMPONENT' || node.type === 'COMPONENT_SET') && 
+        node.name.toLowerCase() === componentName.toLowerCase()) {
+      return node;
+    }
+    
+    if ('children' in node) {
+      for (const child of node.children) {
+        const found = findInNode(child);
+        if (found) return found;
+      }
+    }
+    
+    return null;
+  };
+  
+  // Search current page
+  let component = findInNode(figma.currentPage);
+  if (component) return component;
+  
+  // Search all pages if not found in current page
+  for (const page of figma.root.children) {
+    component = findInNode(page);
+    if (component) return component;
+  }
+  
+  return null;
 }
