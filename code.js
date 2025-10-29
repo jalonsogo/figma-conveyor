@@ -327,10 +327,8 @@ async function findComponentByName(componentName) {
   const findInNode = (node, depth = 0) => {
     const indent = '    '.repeat(depth);
     
-    // Log what we're checking
-    if (depth === 0 || (depth === 1 && 'children' in node)) {
-      console.log(`${indent}Checking: ${node.name} (type: ${node.type})`);
-    }
+    // Log EVERY node we're checking (not just top-level)
+    console.log(`${indent}Checking: ${node.name} (type: ${node.type})`);
     
     // Check if it's a component or component set with matching name
     if ((node.type === 'COMPONENT' || node.type === 'COMPONENT_SET') && 
@@ -363,7 +361,10 @@ async function findComponentByName(componentName) {
   for (const page of figma.root.children) {
     console.log(`  → Searching page: "${page.name}"`);
     const component = findInNode(page);
-    if (component) return component;
+    if (component) {
+      console.log(`  → Found in page: "${page.name}"`);
+      return component;
+    }
   }
   
   console.log(`  → Component "${componentName}" not found anywhere`);
