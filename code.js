@@ -116,7 +116,42 @@ async function generateInstances(component, csvData) {
 }
 
 async function updateTextLayers(node, headers, rowData) {
-  // First, try to match component properties with CSV headers
+  // Update component properties (both top-level and nested instances)
+  await updateInstanceProperties(node, headers, rowData);
+  
+  // Also update text layers by matching names with CSV headers
+  const updateNode = async (n) => {
+    if (n.type === 'TEXT') {
+      // Try to match the text layer name with CSV headers
+      const headerIndex = headers.findIndex(header => 
+        header && n.name && header.toLowerCase().trim() === n.name.toLowerCase().trim()
+      );
+      
+      if (headerIndex !== -1 && rowData[headerIndex] !== undefined && rowData[headerIndex] !== null) {
+        try {
+          // Load the font before changing text
+          await figma.loadFontAsync(n.fontName);
+          n.characters = String(rowData[headerIndex]);
+        } catch (error) {
+          console.error(`Error updating text layer ${n.name}:`, error);
+        }
+      }
+    }
+    
+    // Recursively process children
+    if ('children' in n) {
+      for (const child of n.children) {
+        await updateNode(child);
+      }
+    }
+  };
+  
+  await updateNode(node);
+}
+
+// Update component properties for an instance and all nested instances
+async function updateInstanceProperties(node, headers, rowData) {
+  // Process current node if it's an instance
   if (node.type === 'INSTANCE' && 'componentProperties' in node) {
     const componentProps = node.componentProperties;
     const mainComponent = node.mainComponent;
@@ -164,34 +199,12 @@ async function updateTextLayers(node, headers, rowData) {
     }
   }
   
-  // Also update text layers by matching names with CSV headers
-  const updateNode = async (n) => {
-    if (n.type === 'TEXT') {
-      // Try to match the text layer name with CSV headers
-      const headerIndex = headers.findIndex(header => 
-        header && n.name && header.toLowerCase().trim() === n.name.toLowerCase().trim()
-      );
-      
-      if (headerIndex !== -1 && rowData[headerIndex] !== undefined && rowData[headerIndex] !== null) {
-        try {
-          // Load the font before changing text
-          await figma.loadFontAsync(n.fontName);
-          n.characters = String(rowData[headerIndex]);
-        } catch (error) {
-          console.error(`Error updating text layer ${n.name}:`, error);
-        }
-      }
+  // Recursively process children to find nested instances
+  if ('children' in node) {
+    for (const child of node.children) {
+      await updateInstanceProperties(child, headers, rowData);
     }
-    
-    // Recursively process children
-    if ('children' in n) {
-      for (const child of n.children) {
-        await updateNode(child);
-      }
-    }
-  };
-  
-  await updateNode(node);
+  }
 }
 
 // Parse boolean values from CSV strings

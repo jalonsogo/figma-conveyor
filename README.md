@@ -1,4 +1,11 @@
-# CSV Instance Generator for Figma
+### Nested Components
+
+The plugin automatically traverses and updates nested component instances. If your main component contains other component instances, their properties will also be updated based on CSV column names.
+
+**Example:**
+- Main component has a nested "Badge" component with a boolean property "Visible"
+- CSV column "Visible" with values `true`/`false` will control the badge visibility
+- All matching property names across the component hierarchy are updated# CSV Instance Generator for Figma
 
 A powerful Figma plugin that automates the creation of component instances from CSV data. Perfect for generating design variations, populating mockups with real data, or batch-creating elements with different content.
 
@@ -12,6 +19,7 @@ A powerful Figma plugin that automates the creation of component instances from 
 - 📄 **CSV Import** - Upload CSV files via click or drag & drop
 - 🔄 **Automatic Mapping** - Matches CSV columns to component text and boolean properties by name
 - 🔘 **Boolean Support** - Automatically converts CSV values to boolean properties (true/false, yes/no, 1/0, etc.)
+- 🎭 **Nested Components** - Updates properties in nested component instances automatically
 - 🎨 **Smart Layout** - Arranges instances vertically with proper spacing
 - 👀 **Live Preview** - Preview your CSV data before generating instances
 - 🎯 **Three-Tab Interface** - Clean, organized UI for Generate, Data, and About
@@ -78,9 +86,10 @@ The plugin uses intelligent name-based matching:
 
 1. **Component Text Properties** - Text properties are matched with CSV column headers containing text values
 2. **Component Boolean Properties** - Boolean properties are matched with CSV column headers containing boolean values
-3. **Text Layer Names** - Text layers in the component are matched with CSV column headers
-4. **Case-Insensitive** - Matching works regardless of case (e.g., "name" matches "Name")
-5. **Column Order Independent** - Column order in CSV doesn't matter, only names need to match
+3. **Nested Component Properties** - Properties in nested component instances are also matched and updated
+4. **Text Layer Names** - Text layers in the component are matched with CSV column headers
+5. **Case-Insensitive** - Matching works regardless of case (e.g., "name" matches "Name")
+6. **Column Order Independent** - Column order in CSV doesn't matter, only names need to match
 
 ### Boolean Value Parsing
 
@@ -99,6 +108,7 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 | email | "Email" | TEXT | "john@example.com" | ✅ Matched (case-insensitive) |
 | Active | "Active" | BOOLEAN | "yes" | ✅ Converted to true |
 | Premium | "Premium" | BOOLEAN | "1" | ✅ Converted to true |
+| Visible | "Visible" (nested) | BOOLEAN | "true" | ✅ Updated in nested instance |
 | Status | "Description" | TEXT | "Active" | ❌ Not matched (different names) |
 
 ## 📋 Plugin Interface
@@ -124,6 +134,7 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 - **No Network Access** - All processing is local
 - **Supported Node Types:** Components, component sets, instances
 - **Supported Property Types:** TEXT, BOOLEAN
+- **Nested Component Support** - Recursively updates all nested instances
 - **Font Handling:** Automatic font loading for text updates
 - **CSV Parsing:** Handles quoted values, commas in fields, empty cells
 - **Boolean Parsing:** Flexible parsing with multiple accepted formats
@@ -144,17 +155,19 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 1. **Use Component Properties** - Expose text and boolean properties in your component for easier instance management
 2. **Name Consistently** - Use the same naming convention in both CSV and component
 3. **Boolean Formats** - Use any accepted boolean format (true/false, yes/no, 1/0, etc.)
-4. **Test with Small Data First** - Try with 2-3 rows before processing large datasets
-5. **Keep Backup** - The plugin supports undo (Cmd/Ctrl + Z), but save your work first
+4. **Leverage Nesting** - Use nested components with properties for modular designs
+5. **Test with Small Data First** - Try with 2-3 rows before processing large datasets
+6. **Keep Backup** - The plugin supports undo (Cmd/Ctrl + Z), but save your work first
 
 ### Common Use Cases
 
 - **User Cards** - Generate user profile cards with names, emails, avatars, and active status
 - **Product Lists** - Create product cards with titles, descriptions, prices, and availability flags
 - **Team Directories** - Build team member cards with roles, contact info, and online status
-- **Feature Flags** - Design UI with toggleable features (enabled/disabled states)
+- **Feature Flags** - Design UI with toggleable features using nested badge/indicator components
 - **A/B Testing** - Create multiple variations of designs with different boolean states
-- **Status Indicators** - Generate elements with active/inactive, on/off states
+- **Status Indicators** - Generate elements with active/inactive, on/off states in nested components
+- **Notification Badges** - Control visibility of nested notification/badge components
 
 ## 🐛 Troubleshooting
 
@@ -213,6 +226,7 @@ csv-instance-generator/
 - Main plugin logic running in Figma's sandbox
 - Handles component selection and instance creation
 - Manages text and boolean property updates
+- Recursively updates nested component instances
 - Font loading for text layers
 - Communicates with UI via postMessage
 
