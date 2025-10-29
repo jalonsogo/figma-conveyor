@@ -1,0 +1,4 @@
+name,role,icon,email,task,active
+javier,designer,shell,javier.alonso@docker.com,agents,yes
+nuno,PM,siren,nuno@docker.com,agents,yes
+maria,TPM,soup,maria@docker.com,Platform,no

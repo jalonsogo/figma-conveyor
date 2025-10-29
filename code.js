@@ -116,25 +116,34 @@ async function generateInstances(component, csvData) {
 }
 
 async function updateTextLayers(node, headers, rowData) {
+  console.log('=== Starting update for instance ===');
+  console.log('CSV Headers:', headers);
+  console.log('CSV Row Data:', rowData);
+  
   // Update component properties (both top-level and nested instances)
   await updateInstanceProperties(node, headers, rowData);
   
   // Also update text layers by matching names with CSV headers
   const updateNode = async (n) => {
     if (n.type === 'TEXT') {
+      console.log(`Found TEXT layer: "${n.name}"`);
       // Try to match the text layer name with CSV headers
       const headerIndex = headers.findIndex(header => 
         header && n.name && header.toLowerCase().trim() === n.name.toLowerCase().trim()
       );
       
       if (headerIndex !== -1 && rowData[headerIndex] !== undefined && rowData[headerIndex] !== null) {
+        console.log(`  Matched with CSV column "${headers[headerIndex]}" = "${rowData[headerIndex]}"`);
         try {
           // Load the font before changing text
           await figma.loadFontAsync(n.fontName);
           n.characters = String(rowData[headerIndex]);
+          console.log(`  ✓ Updated text layer "${n.name}"`);
         } catch (error) {
-          console.error(`Error updating text layer ${n.name}:`, error);
+          console.error(`  ✗ Error updating text layer ${n.name}:`, error);
         }
+      } else {
+        console.log(`  No CSV column match for text layer "${n.name}"`);
       }
     }
     
@@ -147,6 +156,7 @@ async function updateTextLayers(node, headers, rowData) {
   };
   
   await updateNode(node);
+  console.log('=== Finished update for instance ===\n');
 }
 
 // Update component properties for an instance and all nested instances
