@@ -193,8 +193,12 @@ async function updateInstanceProperties(node, headers, rowData) {
           if (!propDef) continue;
           
           // For component sets, the property name might not be in propDef.name
-          // Use the propKey itself if name is undefined
-          const propName = propDef.name || propKey;
+          // For regular components, propKey has format "PropertyName#nodeId:index"
+          // Extract just the property name part (before the #)
+          let propName = propDef.name;
+          if (!propName) {
+            propName = propKey.split('#')[0];
+          }
           console.log(`Checking property: ${propName} (type: ${propDef.type})`, 'propKey:', propKey);
           
           // Find matching CSV column (case-insensitive)
