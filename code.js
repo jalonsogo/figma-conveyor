@@ -132,8 +132,9 @@ async function updateTextLayers(node, headers, rowData) {
           // Load the font before changing text
           await figma.loadFontAsync(n.fontName);
           n.characters = String(rowData[headerIndex]);
+          console.log(`✓ Updated: "${n.name}" = "${rowData[headerIndex]}"`);
         } catch (error) {
-          console.error(`Error updating text layer ${n.name}:`, error);
+          console.error(`✗ Error updating "${n.name}":`, error);
         }
       }
     }
@@ -156,9 +157,6 @@ async function updateInstanceProperties(node, headers, rowData) {
     const componentProps = node.componentProperties;
     const mainComponent = node.mainComponent;
     
-    console.log(`Processing instance: ${node.name}`);
-    console.log('Component properties:', Object.keys(componentProps));
-    
     if (mainComponent) {
       // Get property definitions - need to handle variants properly
       let propDefs = null;
@@ -168,22 +166,17 @@ async function updateInstanceProperties(node, headers, rowData) {
         if (mainComponent.parent && mainComponent.parent.type === 'COMPONENT_SET') {
           // For variants, get definitions from the parent component set
           propDefs = mainComponent.parent.componentPropertyDefinitions;
-          console.log('Getting definitions from component set');
         } else if (mainComponent.type === 'COMPONENT') {
           // For regular components, get definitions directly
           propDefs = mainComponent.componentPropertyDefinitions;
-          console.log('Getting definitions from component');
         }
       } catch (error) {
         console.error('Error accessing component property definitions:', error);
       }
       
       if (propDefs) {
-        console.log('Property definitions:', Object.keys(propDefs).map(key => {
-          const def = propDefs[key];
-          const defName = def.name || key; // Use key if name is undefined
-          return `${defName} (${def.type})`;
-        }));
+        console.log('\n=== Processing instance:', node.name, '===');
+        console.log('All component properties:', Object.keys(componentProps));
         
         // Iterate through component properties
         for (const [propKey, propValue] of Object.entries(componentProps)) {
@@ -193,9 +186,14 @@ async function updateInstanceProperties(node, headers, rowData) {
           if (!propDef) continue;
           
           // For component sets, the property name might not be in propDef.name
-          // Use the propKey itself if name is undefined
-          const propName = propDef.name || propKey;
-          console.log(`Checking property: ${propName} (type: ${propDef.type})`, 'propKey:', propKey);
+          // For regular components, propKey has format "PropertyName#nodeId:index"
+          // Extract just the property name part (before the #)
+          let propName = propDef.name;
+          if (!propName) {
+            propName = propKey.split('#')[0];
+          }
+          
+          console.log(`Property: "${propName}" | propValue.type: ${propValue.type} | propDef.type: ${propDef.type}`);
           
           // Find matching CSV column (case-insensitive)
           const headerIndex = headers.findIndex(header => 
@@ -203,51 +201,40 @@ async function updateInstanceProperties(node, headers, rowData) {
           );
           
           if (headerIndex === -1) {
-            console.log(`  No CSV column match for "${propName}". Available CSV columns:`, headers);
+            console.log(`  → No CSV match (available: ${headers.join(', ')})`);
             continue;
           }
           
+          console.log(`  → Matched with CSV column "${headers[headerIndex]}"`);
+          
           if (rowData[headerIndex] === undefined || rowData[headerIndex] === null) {
-            console.log(`  CSV column "${headers[headerIndex]}" has no value`);
             continue;
           }
           
           const cellValue = String(rowData[headerIndex]).trim();
-          console.log(`  Matched! CSV column "${headers[headerIndex]}" = "${cellValue}"`);
           
           try {
             // Handle TEXT properties
             if (propValue.type === 'TEXT' && propDef.type === 'TEXT') {
-              console.log(`  Setting TEXT property to: ${cellValue}`);
-              node.setProperties({
-                [propKey]: cellValue
-              });
+              node.setProperties({ [propKey]: cellValue });
+              console.log(`✓ Updated: "${propName}" = "${cellValue}"`);
             }
             // Handle BOOLEAN properties
             else if (propValue.type === 'BOOLEAN' && propDef.type === 'BOOLEAN') {
-              // Convert string to boolean
               const boolValue = parseBooleanValue(cellValue);
-              console.log(`  Setting BOOLEAN property to: ${boolValue}`);
-              node.setProperties({
-                [propKey]: boolValue
-              });
+              node.setProperties({ [propKey]: boolValue });
+              console.log(`✓ Updated: "${propName}" = ${boolValue}`);
             }
             // Handle VARIANT properties
             else if (propValue.type === 'VARIANT' && propDef.type === 'VARIANT') {
-              // For variants, the value should match one of the variant options
-              // We'll use the CSV value as-is, but can also support boolean-style conversion
               let variantValue = cellValue;
-              
-              console.log('  VARIANT property detected. Options: ' + (propDef.variantOptions ? propDef.variantOptions.join(', ') : 'none'));
               
               // Optional: Try to convert boolean-style values to yes/no for common use cases
               const lowerValue = cellValue.toLowerCase();
               if (propDef.variantOptions) {
-                // Check if the variant has 'yes'/'no' options
                 const hasYesNo = propDef.variantOptions && (propDef.variantOptions.includes('yes') || propDef.variantOptions.includes('no'));
                 
                 if (hasYesNo) {
-                  console.log('  Variant has yes/no options, attempting conversion');
                   // Convert boolean-style values to yes/no
                   if (lowerValue === 'true' || lowerValue === '1' || lowerValue === 'on' || 
                       lowerValue === 'enabled' || lowerValue === 'active' || lowerValue === 'yes') {
@@ -259,10 +246,40 @@ async function updateInstanceProperties(node, headers, rowData) {
                 }
               }
               
-              console.log(`  Setting VARIANT property to: "${variantValue}"`);
-              node.setProperties({
-                [propKey]: variantValue
-              });
+              node.setProperties({ [propKey]: variantValue });
+              console.log(`✓ Updated: "${propName}" = "${variantValue}"`);
+            }
+            // Handle INSTANCE_SWAP properties
+            else if (propValue.type === 'INSTANCE_SWAP' && propDef.type === 'INSTANCE_SWAP') {
+              const componentNameOrKey = cellValue;
+              console.log(`  → Swapping to: "${componentNameOrKey}"`);
+              
+              // Strategy 1: Try to find the component in the document
+              console.log(`  → Strategy 1: Searching document...`);
+              let targetComponent = await findComponentByName(componentNameOrKey);
+              
+              if (!targetComponent) {
+                // Strategy 2: Search through all instances in the document
+                console.log(`  → Strategy 1 failed, trying Strategy 2...`);
+                console.log(`  → Searching all instances for component "${componentNameOrKey}"...`);
+                targetComponent = await findComponentFromAnyInstance(componentNameOrKey);
+              }
+              
+              if (targetComponent) {
+                console.log(`  → Found component:`, targetComponent.name);
+                console.log(`  → Component id: ${targetComponent.id}`);
+                
+                try {
+                  // For INSTANCE_SWAP, we need to pass the component's ID as a string
+                  // The current value format is "12:9" (node ID), not a component key
+                  node.setProperties({ [propKey]: targetComponent.id });
+                  console.log(`✓ Updated: "${propName}" swapped to "${targetComponent.name}"`);
+                } catch (error) {
+                  console.error(`✗ Error swapping "${propName}":`, error.message);
+                }
+              } else {
+                console.log(`✗ Component "${componentNameOrKey}" not found`);
+              }
             }
           } catch (error) {
             console.error(`Error updating component property ${propName}:`, error);
@@ -298,4 +315,134 @@ function parseBooleanValue(value) {
   
   // Default to false for unrecognized values
   return false;
+}
+
+// Find a component by name in the document
+// This includes searching for instances of library components
+async function findComponentByName(componentName) {
+  const nameLower = componentName.toLowerCase();
+  console.log(`  → findComponentByName: searching for "${componentName}"`);
+  
+  // Search in the current page first
+  const findInNode = (node, depth = 0) => {
+    const indent = '    '.repeat(depth);
+    
+    // Log EVERY node we're checking (not just top-level)
+    console.log(`${indent}Checking: ${node.name} (type: ${node.type})`);
+    
+    // Check if it's a component or component set with matching name
+    if ((node.type === 'COMPONENT' || node.type === 'COMPONENT_SET') && 
+        node.name.toLowerCase() === nameLower) {
+      console.log(`${indent}✓ Found COMPONENT: "${node.name}" (id: ${node.id})`);
+      return node;
+    }
+    
+    // Also check instances - if we find an instance with matching mainComponent name,
+    // we can use its mainComponent (this handles library components!)
+    if (node.type === 'INSTANCE' && node.mainComponent) {
+      // Trim spaces from mainComponent name for comparison
+      const mainComponentName = node.mainComponent.name.trim().toLowerCase();
+      
+      // Log what we're comparing
+      if (mainComponentName.includes(nameLower.substring(0, 3))) {
+        console.log(`${indent}  Checking instance: "${node.name}" with mainComponent: "${node.mainComponent.name}"`);
+      }
+      
+      if (mainComponentName === nameLower) {
+        console.log(`${indent}✓ Found INSTANCE with mainComponent: "${node.mainComponent.name}" (id: ${node.mainComponent.id})`);
+        return node.mainComponent;
+      }
+    }
+    
+    if ('children' in node) {
+      for (const child of node.children) {
+        const found = findInNode(child, depth + 1);
+        if (found) return found;
+      }
+    }
+    
+    return null;
+  };
+  
+  // Search ALL pages (not just current page first)
+  console.log(`  → Searching all pages...`);
+  for (const page of figma.root.children) {
+    console.log(`  → Searching page: "${page.name}"`);
+    const component = findInNode(page);
+    if (component) {
+      console.log(`  → Found in page: "${page.name}"`);
+      return component;
+    }
+  }
+  
+  console.log(`  → Component "${componentName}" not found anywhere`);
+  return null;
+}
+
+// Find a component by searching through all instance swap properties in the document
+// This finds library components that are used in ANY instance swap property
+async function findComponentFromAnyInstance(componentName) {
+  const nameLower = componentName.toLowerCase();
+  
+  const searchInNode = (node) => {
+    // Check if this is an instance with component properties
+    if (node.type === 'INSTANCE' && 'componentProperties' in node && node.mainComponent) {
+      const componentProps = node.componentProperties;
+      
+      // Get property definitions
+      let propDefs = null;
+      try {
+        if (node.mainComponent.parent && node.mainComponent.parent.type === 'COMPONENT_SET') {
+          propDefs = node.mainComponent.parent.componentPropertyDefinitions;
+        } else if (node.mainComponent.type === 'COMPONENT') {
+          propDefs = node.mainComponent.componentPropertyDefinitions;
+        }
+      } catch (error) {
+        // Ignore errors
+      }
+      
+      if (propDefs) {
+        // Check each INSTANCE_SWAP property
+        for (const [propKey, propValue] of Object.entries(componentProps)) {
+          if (!propValue || propValue.type !== 'INSTANCE_SWAP') continue;
+          
+          const propDef = propDefs[propKey];
+          if (!propDef || propDef.type !== 'INSTANCE_SWAP') continue;
+          
+          // Check if this property's current value has a mainComponent with matching name
+          if (propValue.value && typeof propValue.value === 'object') {
+            // The value is an instance - get its mainComponent
+            const currentInstance = figma.getNodeById(propValue.value);
+            if (currentInstance && currentInstance.type === 'INSTANCE' && currentInstance.mainComponent) {
+              if (currentInstance.mainComponent.name.toLowerCase() === nameLower) {
+                return currentInstance.mainComponent;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // Recursively search children
+    if ('children' in node) {
+      for (const child of node.children) {
+        const found = searchInNode(child);
+        if (found) return found;
+      }
+    }
+    
+    return null;
+  };
+  
+  // Search current page
+  let component = searchInNode(figma.currentPage);
+  if (component) return component;
+  
+  // Search all pages
+  for (const page of figma.root.children) {
+    component = searchInNode(page);
+    if (component) return component;
+  }
+  
+  return null;
 }
