@@ -251,30 +251,46 @@ async function updateInstanceProperties(node, headers, rowData) {
             }
             // Handle INSTANCE_SWAP properties
             else if (propValue.type === 'INSTANCE_SWAP' && propDef.type === 'INSTANCE_SWAP') {
-              const componentName = cellValue;
-              console.log(`  → Swapping to component: "${componentName}"`);
+              const componentNameOrKey = cellValue;
+              console.log(`  → Swapping to: "${componentNameOrKey}"`);
               
-              try {
-                // For INSTANCE_SWAP, we can pass the component name/key directly as a string
-                // Figma will resolve it (works with library components too!)
-                node.setProperties({ [propKey]: componentName });
-                console.log(`✓ Updated: "${propName}" swapped to "${componentName}"`);
-              } catch (error) {
-                console.error(`✗ Error swapping "${propName}" to "${componentName}":`, error);
+              // First, try to find the component in the document
+              let targetComponent = await findComponentByName(componentNameOrKey);
+              
+              if (targetComponent) {
+                try {
+                  node.setProperties({ [propKey]: targetComponent });
+                  console.log(`✓ Updated: "${propName}" swapped to "${targetComponent.name}"`);
+                } catch (error) {
+                  console.error(`✗ Error swapping "${propName}":`, error.message);
+                }
+              } else {
+                // Component not found locally - might be from library
+                // Try to get it from the current property value's available options
+                console.log(`  → Component not in document, checking preferred values...`);
                 
-                // Fallback: try to find the component in the document
-                console.log(`  → Attempting to find component in document...`);
-                const targetComponent = await findComponentByName(componentName);
-                
-                if (targetComponent) {
-                  try {
-                    node.setProperties({ [propKey]: targetComponent });
-                    console.log(`✓ Updated: "${propName}" swapped to "${targetComponent.name}" (via document search)`);
-                  } catch (fallbackError) {
-                    console.error(`✗ Fallback also failed:`, fallbackError);
+                if (propDef.preferredValues && propDef.preferredValues.length > 0) {
+                  console.log(`  → Preferred values available:`, propDef.preferredValues.map(v => v.type === 'COMPONENT' ? v.name : 'unknown'));
+                  
+                  // Find matching component in preferred values
+                  const matchingPreferred = propDef.preferredValues.find(pv => 
+                    pv.type === 'COMPONENT' && 
+                    pv.name.toLowerCase() === componentNameOrKey.toLowerCase()
+                  );
+                  
+                  if (matchingPreferred) {
+                    try {
+                      node.setProperties({ [propKey]: matchingPreferred });
+                      console.log(`✓ Updated: "${propName}" swapped to "${matchingPreferred.name}" (from library)`);
+                    } catch (error) {
+                      console.error(`✗ Error swapping via preferred values:`, error.message);
+                    }
+                  } else {
+                    console.log(`✗ Component "${componentNameOrKey}" not found in preferred values`);
+                    console.log(`  Available: ${propDef.preferredValues.map(v => v.type === 'COMPONENT' ? v.name : '?').join(', ')}`);
                   }
                 } else {
-                  console.log(`✗ Component "${componentName}" not found in document`);
+                  console.log(`✗ Component "${componentNameOrKey}" not found (no preferred values defined)`);
                 }
               }
             }
