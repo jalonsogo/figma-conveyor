@@ -253,6 +253,7 @@ async function updateInstanceProperties(node, headers, rowData) {
             else if (propValue.type === 'INSTANCE_SWAP' && propDef.type === 'INSTANCE_SWAP') {
               const componentNameOrKey = cellValue;
               console.log(`  → Swapping to: "${componentNameOrKey}"`);
+              console.log(`  → Current value:`, propValue.value);
               
               // Strategy 1: Try to find the component in the document
               let targetComponent = await findComponentByName(componentNameOrKey);
@@ -265,11 +266,21 @@ async function updateInstanceProperties(node, headers, rowData) {
               }
               
               if (targetComponent) {
+                console.log(`  → Found component:`, targetComponent.name, `(type: ${targetComponent.type})`);
                 try {
-                  node.setProperties({ [propKey]: targetComponent });
+                  // For INSTANCE_SWAP, pass the component key (string)
+                  if (targetComponent.key) {
+                    console.log(`  → Using component key: ${targetComponent.key}`);
+                    node.setProperties({ [propKey]: targetComponent.key });
+                  } else {
+                    // Fallback: try the component itself
+                    node.setProperties({ [propKey]: targetComponent });
+                  }
                   console.log(`✓ Updated: "${propName}" swapped to "${targetComponent.name}"`);
                 } catch (error) {
                   console.error(`✗ Error swapping "${propName}":`, error.message);
+                  console.log(`  → Attempted to set propKey: ${propKey}`);
+                  console.log(`  → Component details:`, { name: targetComponent.name, type: targetComponent.type, key: targetComponent.key });
                 }
               } else {
                 console.log(`✗ Component "${componentNameOrKey}" not found`);
