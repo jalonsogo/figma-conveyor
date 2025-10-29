@@ -252,18 +252,30 @@ async function updateInstanceProperties(node, headers, rowData) {
             // Handle INSTANCE_SWAP properties
             else if (propValue.type === 'INSTANCE_SWAP' && propDef.type === 'INSTANCE_SWAP') {
               const componentName = cellValue;
-              console.log(`  → Looking for component: "${componentName}"`);
-              const targetComponent = await findComponentByName(componentName);
+              console.log(`  → Swapping to component: "${componentName}"`);
               
-              if (targetComponent) {
-                try {
-                  node.setProperties({ [propKey]: targetComponent });
-                  console.log(`✓ Updated: "${propName}" swapped to "${targetComponent.name}"`);
-                } catch (error) {
-                  console.error(`✗ Error swapping "${propName}":`, error);
+              try {
+                // For INSTANCE_SWAP, we can pass the component name/key directly as a string
+                // Figma will resolve it (works with library components too!)
+                node.setProperties({ [propKey]: componentName });
+                console.log(`✓ Updated: "${propName}" swapped to "${componentName}"`);
+              } catch (error) {
+                console.error(`✗ Error swapping "${propName}" to "${componentName}":`, error);
+                
+                // Fallback: try to find the component in the document
+                console.log(`  → Attempting to find component in document...`);
+                const targetComponent = await findComponentByName(componentName);
+                
+                if (targetComponent) {
+                  try {
+                    node.setProperties({ [propKey]: targetComponent });
+                    console.log(`✓ Updated: "${propName}" swapped to "${targetComponent.name}" (via document search)`);
+                  } catch (fallbackError) {
+                    console.error(`✗ Fallback also failed:`, fallbackError);
+                  }
+                } else {
+                  console.log(`✗ Component "${componentName}" not found in document`);
                 }
-              } else {
-                console.log(`✗ Component "${componentName}" not found for "${propName}"`);
               }
             }
           } catch (error) {
