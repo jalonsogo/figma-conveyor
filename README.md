@@ -64,7 +64,7 @@ The plugin automatically traverses and updates nested component instances. If yo
 **Example:**
 - Main component has a nested "Badge" component with a boolean property "Visible"
 - CSV column "Visible" with values `true`/`false` will control the badge visibility
-- All matching property names across the component hierarchy are updated# CSV Instance Generator for Figma
+- All matching property names across the component hierarchy are updated# Conveyor - Figma Plugin
 
 A powerful Figma plugin that automates the creation of component instances from CSV data. Perfect for generating design variations, populating mockups with real data, or batch-creating elements with different content.
 
@@ -94,7 +94,7 @@ A powerful Figma plugin that automates the creation of component instances from 
 2. Open **Figma Desktop App**
 3. Go to **Plugins** → **Development** → **Import plugin from manifest**
 4. Select the `manifest.json` file from this directory
-5. The plugin appears in **Plugins** → **Development** → **CSV Instance Generator**
+5. The plugin appears in **Plugins** → **Development** → **Conveyor**
 
 ### Usage
 
@@ -144,7 +144,7 @@ See `example.csv` for a sample file.
 #### 3. Generate Instances
 
 1. Select your component (or an instance of it) in Figma
-2. Run the plugin: **Plugins** → **Development** → **CSV Instance Generator**
+2. Run the plugin: **Plugins** → **Development** → **Conveyor**
 3. In the **Generate** tab, click **"Select Component"**
 4. Switch to the **Data** tab
 5. Upload your CSV file (click or drag & drop)
@@ -293,7 +293,7 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 ## 🗂️ Project Structure
 
 ```
-csv-instance-generator/
+conveyor/
 ├── manifest.json       # Plugin configuration
 ├── code.js            # Main plugin logic (Figma API)
 ├── ui.html            # User interface with styling and scripts

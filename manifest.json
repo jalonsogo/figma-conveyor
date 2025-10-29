@@ -1,6 +1,6 @@
 {
-  "name": "CSV Instance Generator",
-  "id": "csv-instance-generator",
+  "name": "Conveyor",
+  "id": "conveyor",
   "api": "1.0.0",
   "main": "code.js",
   "ui": "ui.html",
