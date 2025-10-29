@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      color: #333;
+      overflow: hidden;
+    }
+
+    h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #000;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e5e5;
+      background: #fafafa;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      color: #666;
+      transition: all 0.2s;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab:hover {
+      color: #333;
+      background: #f0f0f0;
+    }
+
+    .tab.active {
+      color: #0d99ff;
+      background: #ffffff;
+      border-bottom: 2px solid #0d99ff;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 16px;
+      height: calc(100vh - 49px);
+      overflow-y: auto;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .step-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #e5e5e5;
+      font-weight: 600;
+      font-size: 11px;
+      color: #333;
+    }
+
+    .step.active .step-number {
+      background: #0d99ff;
+      color: white;
+    }
+
+    .step.completed .step-number {
+      background: #0fa958;
+      color: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #0d99ff;
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #0b7fd9;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      margin-top: 8px;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #e5e5e5;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .file-upload {
+      position: relative;
+      margin-top: 12px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 32px;
+      border: 2px dashed #d0d0d0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .file-label:hover {
+      border-color: #0d99ff;
+      background: #f8fcff;
+      color: #0d99ff;
+    }
+
+    .file-label.drag-over {
+      border-color: #0d99ff;
+      background: #f0f9ff;
+      color: #0d99ff;
+      transform: scale(1.02);
+    }
+
+    .file-info {
+      margin-top: 12px;
+      padding: 12px;
+      background: #f8fcff;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .file-info strong {
+      color: #0d99ff;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .component-info {
+      margin-top: 12px;
+      padding: 12px;
+      background: #f0fdf4;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .component-info strong {
+      color: #0fa958;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-top: 12px;
+    }
+
+    .status.error {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .status.success {
+      background: #f0fdf4;
+      color: #0fa958;
+    }
+
+    .csv-preview {
+      margin-top: 12px;
+      max-height: 150px;
+      overflow: auto;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      font-size: 11px;
+      background: #fafafa;
+    }
+
+    .csv-preview table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .csv-preview th,
+    .csv-preview td {
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .csv-preview th {
+      background: #f0f0f0;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    .instructions {
+      padding: 12px;
+      background: #fffbeb;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #92400e;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .instructions strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #78350f;
+    }
+
+    .about-content {
+      line-height: 1.6;
+    }
+
+    .about-content h3 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      color: #000;
+    }
+
+    .about-content h3:first-child {
+      margin-top: 0;
+    }
+
+    .about-content p {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .about-content ul {
+      font-size: 12px;
+      color: #666;
+      margin-left: 20px;
+      margin-bottom: 12px;
+    }
+
+    .about-content li {
+      margin-bottom: 6px;
+    }
+
+    .about-content code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 11px;
+    }
+
+    .version {
+      display: inline-block;
+      background: #e5e5e5;
+      color: #666;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-tab="generate">Generate</button>
+    <button class="tab" data-tab="data">Data</button>
+    <button class="tab" data-tab="about">About</button>
+  </div>
+
+  <!-- Generate Tab -->
+  <div class="tab-content active" id="generate-tab">
+    <h2>CSV Instance Generator</h2>
+
+  <div class="section">
+    <div class="step" id="step1">
+      <span class="step-number">1</span>
+      <span>Select a component</span>
+    </div>
+    <button class="btn-primary" id="selectComponentBtn">Select Component</button>
+    <div id="componentInfo"></div>
+  </div>
+
+  <div class="section">
+    <div class="step" id="step2">
+      <span class="step-number">2</span>
+      <span>Generate instances</span>
+    </div>
+    <button class="btn-primary" id="generateBtn" disabled>Generate Instances</button>
+    <button class="btn-secondary" id="cancelBtn">Cancel</button>
+  </div>
+
+  <div id="status"></div>
+
+  <div class="instructions">
+    <strong>💡 Quick Tip:</strong>
+    Component text properties and text layer names are matched with CSV column headers (case-insensitive).
+  </div>
+  </div>
+
+  <!-- Data Tab -->
+  <div class="tab-content" id="data-tab">
+    <h2>CSV Data</h2>
+    
+    <div class="section">
+      <div class="file-upload">
+        <input type="file" id="csvFile" accept=".csv" />
+        <label for="csvFile" class="file-label" id="dropZone">
+          📁 Click to upload or drag & drop CSV file
+        </label>
+      </div>
+      <div id="fileInfo"></div>
+    </div>
+    
+    <div id="dataPreviewFull"></div>
+  </div>
+
+  <!-- About Tab -->
+  <div class="tab-content" id="about-tab">
+    <h2>About CSV Instance Generator</h2>
+    <span class="version">Version 1.0.0</span>
+    
+    <div class="about-content">
+      <p>A Figma plugin that generates component instances from CSV data, automatically replacing text content with data from each CSV row.</p>
+      
+      <h3>✨ Features</h3>
+      <ul>
+        <li>Select any component, component set, or instance</li>
+        <li>Upload CSV files with your data</li>
+        <li>Automatically creates instances for each CSV row</li>
+        <li>Maps CSV columns to text layers by matching names</li>
+        <li>Arranges instances vertically with proper spacing</li>
+        <li>Preview CSV data before generating</li>
+      </ul>
+
+      <h3>🚀 How It Works</h3>
+      <p><strong>1. Prepare Your Component</strong></p>
+      <p>Create a component with text properties or text layers named to match your CSV column headers.</p>
+      
+      <p><strong>2. Prepare Your CSV</strong></p>
+      <p>First row should contain column headers that match your component property/layer names.</p>
+      
+      <p><strong>3. Generate</strong></p>
+      <p>Select your component, upload CSV, and click Generate Instances!</p>
+
+      <h3>📋 Example CSV Format</h3>
+      <p><code>Name,Email,Role</code><br>
+      <code>John Doe,john@example.com,Designer</code><br>
+      <code>Jane Smith,jane@example.com,Developer</code></p>
+
+      <h3>💡 Tips</h3>
+      <ul>
+        <li>Use component text properties for easier instance customization</li>
+        <li>Column headers are case-insensitive ("name" matches "Name")</li>
+        <li>The plugin preserves text formatting from the component</li>
+        <li>You can undo with Cmd/Ctrl + Z</li>
+      </ul>
+
+      <h3>🔧 Technical Details</h3>
+      <ul>
+        <li>No network access required - all processing is local</li>
+        <li>Supports components, component sets, and instances</li>
+        <li>Handles font loading automatically</li>
+        <li>Maps CSV columns to component text properties and text layers</li>
+      </ul>
+
+      <h3>📝 License</h3>
+      <p>MIT License - Free to use and modify</p>
+    </div>
+  </div>
+
+  <script>
+    let csvData = null;
+    let componentSelected = false;
+
+    // Tab switching
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.getAttribute('data-tab');
+        
+        // Remove active class from all tabs and contents
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(tc => tc.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding content
+        tab.classList.add('active');
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+      });
+    });
+
+    const selectComponentBtn = document.getElementById('selectComponentBtn');
+    const csvFileInput = document.getElementById('csvFile');
+    const dropZone = document.getElementById('dropZone');
+    const generateBtn = document.getElementById('generateBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const componentInfo = document.getElementById('componentInfo');
+    const fileInfo = document.getElementById('fileInfo');
+    const dataPreviewFull = document.getElementById('dataPreviewFull');
+    const status = document.getElementById('status');
+
+    // Select component
+    selectComponentBtn.addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'select-component' } }, '*');
+    });
+
+    // Handle CSV file upload
+    csvFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        handleFile(file);
+      }
+    });
+
+    // Drag and drop handlers
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove('drag-over');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove('drag-over');
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        if (file.name.endsWith('.csv')) {
+          handleFile(file);
+        } else {
+          showStatus('error', 'Please drop a CSV file');
+        }
+      }
+    });
+
+    // Handle file processing
+    function handleFile(file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const csv = event.target.result;
+          csvData = parseCSV(csv);
+          
+          if (csvData && csvData.length > 0) {
+            document.getElementById('step2').classList.remove('active');
+            fileInfo.innerHTML = `
+              <div class="file-info">
+                <strong>File loaded:</strong>
+                ${file.name}<br>
+                ${csvData.length - 1} data rows (${csvData[0].length} columns)
+              </div>
+            `;
+            
+            displayFullDataPreview(csvData);
+            updateGenerateButton();
+            
+            // Switch to Data tab to show the uploaded data
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(tc => tc.classList.remove('active'));
+            tabs[1].classList.add('active');
+            document.getElementById('data-tab').classList.add('active');
+        } else {
+          showStatus('error', 'Invalid CSV file');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Generate instances
+    generateBtn.addEventListener('click', () => {
+      if (csvData && componentSelected) {
+        showStatus('', '');
+        parent.postMessage({ 
+          pluginMessage: { 
+            type: 'generate-instances',
+            csvData: csvData 
+          } 
+        }, '*');
+      }
+    });
+
+    // Cancel
+    cancelBtn.addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+    });
+
+    // Parse CSV
+    function parseCSV(csv) {
+      const lines = csv.split('\n').filter(line => line.trim());
+      const result = [];
+      
+      for (let line of lines) {
+        const row = [];
+        let cell = '';
+        let insideQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          
+          if (char === '"') {
+            insideQuotes = !insideQuotes;
+          } else if (char === ',' && !insideQuotes) {
+            row.push(cell.trim());
+            cell = '';
+          } else {
+            cell += char;
+          }
+        }
+        row.push(cell.trim());
+        
+        // Filter out completely empty rows
+        if (row.some(cell => cell !== '')) {
+          result.push(row);
+        }
+      }
+      
+      return result;
+    }
+
+    // Display full CSV preview in Data tab
+    function displayFullDataPreview(data) {
+      if (data.length === 0) {
+        dataPreviewFull.innerHTML = '<p style="color: #999; font-size: 12px; text-align: center; padding: 40px 0;">No data loaded. Upload a CSV file in the Generate tab.</p>';
+        return;
+      }
+      
+      const headers = data[0];
+      const dataRows = data.slice(1);
+      
+      let html = `<div style="margin-bottom: 12px; font-size: 11px; color: #666;">
+        <strong style="color: #000;">${dataRows.length}</strong> rows × <strong style="color: #000;">${headers.length}</strong> columns
+      </div>`;
+      
+      html += '<div class="csv-preview" style="max-height: calc(100vh - 140px);"><table><thead><tr>';
+      headers.forEach(header => {
+        html += `<th>${header}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+      
+      dataRows.forEach(row => {
+        html += '<tr>';
+        row.forEach(cell => {
+          html += `<td>${cell}</td>`;
+        });
+        html += '</tr>';
+      });
+      
+      html += '</tbody></table></div>';
+      
+      dataPreviewFull.innerHTML = html;
+    }
+
+    // Update generate button state
+    function updateGenerateButton() {
+      if (csvData && componentSelected) {
+        generateBtn.disabled = false;
+        document.getElementById('step3').classList.add('active');
+      } else {
+        generateBtn.disabled = true;
+        document.getElementById('step3').classList.remove('active');
+      }
+    }
+
+    // Show status message
+    function showStatus(type, message) {
+      if (!message) {
+        status.innerHTML = '';
+        return;
+      }
+      status.innerHTML = `<div class="status ${type}">${message}</div>`;
+    }
+
+    // Initialize data preview
+    displayFullDataPreview([]);
+
+    // Listen for messages from plugin code
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      
+      if (msg.type === 'component-selected') {
+        componentSelected = true;
+        document.getElementById('step1').classList.add('completed');
+        document.getElementById('step2').classList.add('active');
+        componentInfo.innerHTML = `
+          <div class="component-info">
+            <strong>Component selected:</strong>
+            ${msg.name}
+          </div>
+        `;
+        updateGenerateButton();
+      }
+      
+      if (msg.type === 'component-error') {
+        showStatus('error', msg.message);
+      }
+      
+      if (msg.type === 'generation-complete') {
+        document.getElementById('step2').classList.add('completed');
+        showStatus('success', `✓ Successfully created ${msg.count - 1} instances!`);
+      }
+      
+      if (msg.type === 'generation-error') {
+        showStatus('error', msg.message);
+      }
+    };
+  </script>
+</body>
+</html>
