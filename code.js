@@ -265,33 +265,12 @@ async function updateInstanceProperties(node, headers, rowData) {
                   console.error(`✗ Error swapping "${propName}":`, error.message);
                 }
               } else {
-                // Component not found locally - might be from library
-                // Try to get it from the current property value's available options
-                console.log(`  → Component not in document, checking preferred values...`);
-                
-                if (propDef.preferredValues && propDef.preferredValues.length > 0) {
-                  console.log(`  → Preferred values available:`, propDef.preferredValues.map(v => v.type === 'COMPONENT' ? v.name : 'unknown'));
-                  
-                  // Find matching component in preferred values
-                  const matchingPreferred = propDef.preferredValues.find(pv => 
-                    pv.type === 'COMPONENT' && 
-                    pv.name.toLowerCase() === componentNameOrKey.toLowerCase()
-                  );
-                  
-                  if (matchingPreferred) {
-                    try {
-                      node.setProperties({ [propKey]: matchingPreferred });
-                      console.log(`✓ Updated: "${propName}" swapped to "${matchingPreferred.name}" (from library)`);
-                    } catch (error) {
-                      console.error(`✗ Error swapping via preferred values:`, error.message);
-                    }
-                  } else {
-                    console.log(`✗ Component "${componentNameOrKey}" not found in preferred values`);
-                    console.log(`  Available: ${propDef.preferredValues.map(v => v.type === 'COMPONENT' ? v.name : '?').join(', ')}`);
-                  }
-                } else {
-                  console.log(`✗ Component "${componentNameOrKey}" not found (no preferred values defined)`);
-                }
+                // Component not found locally
+                console.log(`  → Component "${componentNameOrKey}" not found in document`);
+                console.log(`  → For library components: They must be added to preferred values AND`);
+                console.log(`     at least one instance must exist in the document first`);
+                console.log(`  → Try: 1) Manually place one instance of "${componentNameOrKey}" in the file`);
+                console.log(`         2) Run the plugin again`);
               }
             }
           } catch (error) {
@@ -331,12 +310,23 @@ function parseBooleanValue(value) {
 }
 
 // Find a component by name in the document
+// This includes searching for instances of library components
 async function findComponentByName(componentName) {
+  const nameLower = componentName.toLowerCase();
+  
   // Search in the current page first
   const findInNode = (node) => {
+    // Check if it's a component or component set with matching name
     if ((node.type === 'COMPONENT' || node.type === 'COMPONENT_SET') && 
-        node.name.toLowerCase() === componentName.toLowerCase()) {
+        node.name.toLowerCase() === nameLower) {
       return node;
+    }
+    
+    // Also check instances - if we find an instance with matching mainComponent name,
+    // we can use its mainComponent (this handles library components!)
+    if (node.type === 'INSTANCE' && node.mainComponent && 
+        node.mainComponent.name.toLowerCase() === nameLower) {
+      return node.mainComponent;
     }
     
     if ('children' in node) {
