@@ -253,7 +253,7 @@ async function updateInstanceProperties(node, headers, rowData) {
             else if (propValue.type === 'INSTANCE_SWAP' && propDef.type === 'INSTANCE_SWAP') {
               const componentNameOrKey = cellValue;
               console.log(`  → Swapping to: "${componentNameOrKey}"`);
-              console.log(`  → Current value:`, propValue.value);
+              console.log(`  → Current propValue:`, JSON.stringify(propValue, null, 2));
               
               // Strategy 1: Try to find the component in the document
               let targetComponent = await findComponentByName(componentNameOrKey);
@@ -267,20 +267,26 @@ async function updateInstanceProperties(node, headers, rowData) {
               
               if (targetComponent) {
                 console.log(`  → Found component:`, targetComponent.name, `(type: ${targetComponent.type})`);
+                console.log(`  → Component key:`, targetComponent.key);
+                console.log(`  → Component id:`, targetComponent.id);
+                
                 try {
-                  // For INSTANCE_SWAP, pass the component key (string)
+                  // Try different approaches to set the property
+                  
+                  // Approach 1: Try component.key as string
                   if (targetComponent.key) {
-                    console.log(`  → Using component key: ${targetComponent.key}`);
+                    console.log(`  → Attempting with component.key: "${targetComponent.key}"`);
                     node.setProperties({ [propKey]: targetComponent.key });
+                    console.log(`✓ Updated: "${propName}" swapped to "${targetComponent.name}" (using key)`);
                   } else {
-                    // Fallback: try the component itself
+                    // Approach 2: Try the component object directly
+                    console.log(`  → No key found, attempting with component object`);
                     node.setProperties({ [propKey]: targetComponent });
+                    console.log(`✓ Updated: "${propName}" swapped to "${targetComponent.name}" (using object)`);
                   }
-                  console.log(`✓ Updated: "${propName}" swapped to "${targetComponent.name}"`);
                 } catch (error) {
                   console.error(`✗ Error swapping "${propName}":`, error.message);
-                  console.log(`  → Attempted to set propKey: ${propKey}`);
-                  console.log(`  → Component details:`, { name: targetComponent.name, type: targetComponent.type, key: targetComponent.key });
+                  console.log(`  → Full error:`, error);
                 }
               } else {
                 console.log(`✗ Component "${componentNameOrKey}" not found`);
