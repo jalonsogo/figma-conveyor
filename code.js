@@ -156,44 +156,60 @@ async function updateInstanceProperties(node, headers, rowData) {
     const componentProps = node.componentProperties;
     const mainComponent = node.mainComponent;
     
-    if (mainComponent && 'componentPropertyDefinitions' in mainComponent) {
-      const propDefs = mainComponent.componentPropertyDefinitions;
+    if (mainComponent) {
+      // Get property definitions - need to handle variants properly
+      let propDefs = null;
       
-      // Iterate through component properties
-      for (const [propKey, propValue] of Object.entries(componentProps)) {
-        if (!propValue || typeof propValue !== 'object' || !('type' in propValue)) continue;
-        
-        const propDef = propDefs[propKey];
-        if (!propDef) continue;
-        
-        const propName = propDef.name;
-        
-        // Find matching CSV column (case-insensitive)
-        const headerIndex = headers.findIndex(header => 
-          header && propName && header.toLowerCase().trim() === propName.toLowerCase().trim()
-        );
-        
-        if (headerIndex === -1 || rowData[headerIndex] === undefined || rowData[headerIndex] === null) continue;
-        
-        const cellValue = String(rowData[headerIndex]).trim();
-        
-        try {
-          // Handle TEXT properties
-          if (propValue.type === 'TEXT' && propDef.type === 'TEXT') {
-            node.setProperties({
-              [propKey]: cellValue
-            });
+      try {
+        // Check if this is a variant (child of a component set)
+        if (mainComponent.parent && mainComponent.parent.type === 'COMPONENT_SET') {
+          // For variants, get definitions from the parent component set
+          propDefs = mainComponent.parent.componentPropertyDefinitions;
+        } else if (mainComponent.type === 'COMPONENT') {
+          // For regular components, get definitions directly
+          propDefs = mainComponent.componentPropertyDefinitions;
+        }
+      } catch (error) {
+        console.error('Error accessing component property definitions:', error);
+      }
+      
+      if (propDefs) {
+        // Iterate through component properties
+        for (const [propKey, propValue] of Object.entries(componentProps)) {
+          if (!propValue || typeof propValue !== 'object' || !('type' in propValue)) continue;
+          
+          const propDef = propDefs[propKey];
+          if (!propDef) continue;
+          
+          const propName = propDef.name;
+          
+          // Find matching CSV column (case-insensitive)
+          const headerIndex = headers.findIndex(header => 
+            header && propName && header.toLowerCase().trim() === propName.toLowerCase().trim()
+          );
+          
+          if (headerIndex === -1 || rowData[headerIndex] === undefined || rowData[headerIndex] === null) continue;
+          
+          const cellValue = String(rowData[headerIndex]).trim();
+          
+          try {
+            // Handle TEXT properties
+            if (propValue.type === 'TEXT' && propDef.type === 'TEXT') {
+              node.setProperties({
+                [propKey]: cellValue
+              });
+            }
+            // Handle BOOLEAN properties
+            else if (propValue.type === 'BOOLEAN' && propDef.type === 'BOOLEAN') {
+              // Convert string to boolean
+              const boolValue = parseBooleanValue(cellValue);
+              node.setProperties({
+                [propKey]: boolValue
+              });
+            }
+          } catch (error) {
+            console.error(`Error updating component property ${propName}:`, error);
           }
-          // Handle BOOLEAN properties
-          else if (propValue.type === 'BOOLEAN' && propDef.type === 'BOOLEAN') {
-            // Convert string to boolean
-            const boolValue = parseBooleanValue(cellValue);
-            node.setProperties({
-              [propKey]: boolValue
-            });
-          }
-        } catch (error) {
-          console.error(`Error updating component property ${propName}:`, error);
         }
       }
     }

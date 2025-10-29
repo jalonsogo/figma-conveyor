@@ -15,7 +15,7 @@ A powerful Figma plugin that automates the creation of component instances from 
 
 ## ✨ Features
 
-- 📦 **Component Support** - Works with components, component sets, and instances
+- 📦 **Component Support** - Works with components, component sets, variants, and instances
 - 📄 **CSV Import** - Upload CSV files via click or drag & drop
 - 🔄 **Automatic Mapping** - Matches CSV columns to component text and boolean properties by name
 - 🔘 **Boolean Support** - Automatically converts CSV values to boolean properties (true/false, yes/no, 1/0, etc.)
@@ -132,9 +132,10 @@ All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 
 - **API Version:** Figma Plugin API 1.0.0
 - **No Network Access** - All processing is local
-- **Supported Node Types:** Components, component sets, instances
+- **Supported Node Types:** Components, component sets, variants, instances
 - **Supported Property Types:** TEXT, BOOLEAN
 - **Nested Component Support** - Recursively updates all nested instances
+- **Variant Support** - Properly handles component sets and variant property definitions
 - **Font Handling:** Automatic font loading for text updates
 - **CSV Parsing:** Handles quoted values, commas in fields, empty cells
 - **Boolean Parsing:** Flexible parsing with multiple accepted formats
