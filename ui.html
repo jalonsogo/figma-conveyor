@@ -10,48 +10,49 @@
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Inter', sans-serif;
       background: #ffffff;
       color: #333;
       overflow: hidden;
+      font-size: 12px;
     }
 
     h2 {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       margin-bottom: 16px;
-      color: #000;
+      color: #333;
     }
 
     /* Tabs */
     .tabs {
       display: flex;
-      border-bottom: 1px solid #e5e5e5;
-      background: #fafafa;
+      border-bottom: 1px solid #E5E5E5;
+      background: #ffffff;
     }
 
     .tab {
       flex: 1;
       padding: 12px 16px;
       border: none;
+      border-radius: 0;
       background: transparent;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
-      color: #666;
+      color: #333;
       transition: all 0.2s;
       border-bottom: 2px solid transparent;
     }
 
     .tab:hover {
-      color: #333;
-      background: #f0f0f0;
+      background: #F5F5F5;
     }
 
     .tab.active {
-      color: #0d99ff;
+      color: #18A0FB;
       background: #ffffff;
-      border-bottom: 2px solid #0d99ff;
+      border-bottom: 2px solid #18A0FB;
     }
 
     .tab-content {
@@ -85,19 +86,19 @@
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      background: #e5e5e5;
+      background: #E5E5E5;
       font-weight: 600;
       font-size: 11px;
       color: #333;
     }
 
     .step.active .step-number {
-      background: #0d99ff;
+      background: #18A0FB;
       color: white;
     }
 
     .step.completed .step-number {
-      background: #0fa958;
+      background: #10B981;
       color: white;
     }
 
@@ -107,28 +108,28 @@
       border: none;
       border-radius: 6px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
     }
 
     .btn-primary {
-      background: #0d99ff;
+      background: #18A0FB;
       color: white;
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: #0b7fd9;
+      background: #0F7CE8;
     }
 
     .btn-secondary {
-      background: #f0f0f0;
-      color: #333;
+      background: #6C7B7F;
+      color: white;
       margin-top: 8px;
     }
 
     .btn-secondary:hover:not(:disabled) {
-      background: #e5e5e5;
+      background: #5A6B70;
     }
 
     button:disabled {
@@ -151,38 +152,38 @@
       justify-content: center;
       width: 100%;
       padding: 32px;
-      border: 2px dashed #d0d0d0;
-      border-radius: 6px;
+      border: 2px dashed #E5E5E5;
+      border-radius: 4px;
       cursor: pointer;
       transition: all 0.2s;
       font-size: 12px;
-      color: #666;
+      color: #8C8C8C;
     }
 
     .file-label:hover {
-      border-color: #0d99ff;
-      background: #f8fcff;
-      color: #0d99ff;
+      border-color: #18A0FB;
+      background: #E8F4FD;
+      color: #18A0FB;
     }
 
     .file-label.drag-over {
-      border-color: #0d99ff;
-      background: #f0f9ff;
-      color: #0d99ff;
+      border-color: #18A0FB;
+      background: #E8F4FD;
+      color: #18A0FB;
       transform: scale(1.02);
     }
 
     .file-info {
       margin-top: 12px;
       padding: 12px;
-      background: #f8fcff;
-      border-radius: 6px;
+      background: #F8F8F8;
+      border-radius: 4px;
       font-size: 11px;
-      color: #666;
+      color: #333;
     }
 
     .file-info strong {
-      color: #0d99ff;
+      color: #18A0FB;
       display: block;
       margin-bottom: 4px;
     }
@@ -190,43 +191,43 @@
     .component-info {
       margin-top: 12px;
       padding: 12px;
-      background: #f0fdf4;
-      border-radius: 6px;
+      background: #F8F8F8;
+      border-radius: 4px;
       font-size: 11px;
-      color: #666;
+      color: #333;
     }
 
     .component-info strong {
-      color: #0fa958;
+      color: #10B981;
       display: block;
       margin-bottom: 4px;
     }
 
     .status {
       padding: 12px;
-      border-radius: 6px;
+      border-radius: 4px;
       font-size: 12px;
       margin-top: 12px;
     }
 
     .status.error {
-      background: #fef2f2;
-      color: #dc2626;
+      background: #FDF2F2;
+      color: #E74C3C;
     }
 
     .status.success {
-      background: #f0fdf4;
-      color: #0fa958;
+      background: #F8F8F8;
+      color: #10B981;
     }
 
     .csv-preview {
       margin-top: 12px;
       max-height: 150px;
       overflow: auto;
-      border: 1px solid #e5e5e5;
-      border-radius: 6px;
+      border: 1px solid #E5E5E5;
+      border-radius: 4px;
       font-size: 11px;
-      background: #fafafa;
+      background: #FAFAFA;
     }
 
     .csv-preview table {
@@ -238,11 +239,11 @@
     .csv-preview td {
       padding: 6px 8px;
       text-align: left;
-      border-bottom: 1px solid #e5e5e5;
+      border-bottom: 1px solid #E5E5E5;
     }
 
     .csv-preview th {
-      background: #f0f0f0;
+      background: #F5F5F5;
       font-weight: 600;
       position: sticky;
       top: 0;
@@ -250,10 +251,10 @@
 
     .instructions {
       padding: 12px;
-      background: #fffbeb;
-      border-radius: 6px;
+      background: #F8F8F8;
+      border-radius: 4px;
       font-size: 11px;
-      color: #92400e;
+      color: #8C8C8C;
       line-height: 1.5;
       margin-bottom: 12px;
     }
@@ -261,7 +262,7 @@
     .instructions strong {
       display: block;
       margin-bottom: 6px;
-      color: #78350f;
+      color: #333;
     }
 
     .about-content {
@@ -307,21 +308,389 @@
 
     .version {
       display: inline-block;
-      background: #e5e5e5;
-      color: #666;
+      background: #F5F5F5;
+      color: #8C8C8C;
       padding: 4px 8px;
-      border-radius: 4px;
+      border-radius: 3px;
       font-size: 10px;
       font-weight: 600;
       margin-bottom: 12px;
     }
+
+    /* Global drag overlay */
+    #globalDropOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    #globalDropOverlay.active {
+      display: flex;
+      pointer-events: all;
+    }
+
+    .drop-placeholder {
+      text-align: center;
+      color: white;
+      pointer-events: none;
+    }
+
+    .drop-placeholder-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .drop-placeholder-text {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .drop-placeholder-subtext {
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    /* Data sources list */
+    .data-sources-list {
+      margin-top: 16px;
+    }
+
+    .csv-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      border: 1px solid #E5E5E5;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      background: #ffffff;
+      transition: all 0.2s;
+    }
+
+    .csv-item:hover {
+      border-color: #18A0FB;
+      background: #E8F4FD;
+    }
+
+    .csv-item.selected {
+      border-color: #18A0FB;
+      background: #E8F4FD;
+    }
+
+    .csv-info {
+      flex: 1;
+    }
+
+    .csv-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .csv-meta {
+      font-size: 10px;
+      color: #8C8C8C;
+    }
+
+    .csv-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-small {
+      padding: 8px 12px;
+      font-size: 11px;
+      border-radius: 4px;
+      border: 1px solid #E5E5E5;
+      background: white;
+      color: #333;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: auto;
+      font-weight: 500;
+    }
+
+    .btn-small:hover {
+      background: #E8F4FD;
+      border-color: #18A0FB;
+      color: #18A0FB;
+    }
+
+    .btn-small.primary {
+      background: #18A0FB;
+      color: white;
+      border-color: #18A0FB;
+      font-weight: 700;
+    }
+
+    .btn-small.primary:hover {
+      background: #0F7CE8;
+      border-color: #0F7CE8;
+    }
+
+    .btn-small.danger {
+      color: #E74C3C;
+    }
+
+    .btn-small.danger:hover {
+      background: #FDF2F2;
+      border-color: #E74C3C;
+      color: #E74C3C;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #8C8C8C;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.3;
+    }
+
+    .empty-state-text {
+      font-size: 12px;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .empty-state-subtext {
+      font-size: 11px;
+      color: #8C8C8C;
+    }
+
+    /* Modal styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 8px;
+      max-width: 500px;
+      max-height: 80vh;
+      width: 90%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #E5E5E5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #8C8C8C;
+      cursor: pointer;
+      padding: 0;
+      width: auto;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #333;
+    }
+
+    .modal-body {
+      padding: 16px 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid #E5E5E5;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .modal-footer button {
+      width: auto;
+      min-width: 80px;
+    }
+
+    /* Data source selector */
+    .data-source-selector {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    select {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #E5E5E5;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      color: #333;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    select:hover {
+      border-color: #18A0FB;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #18A0FB;
+      box-shadow: 0 0 0 1px #18A0FB;
+    }
+
+    select:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #F5F5F5;
+    }
+
+    .btn-icon {
+      padding: 8px 12px;
+      font-size: 11px;
+      border-radius: 4px;
+      border: 1px solid #E5E5E5;
+      background: white;
+      color: #333;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .btn-icon:hover:not(:disabled) {
+      background: #E8F4FD;
+      border-color: #18A0FB;
+      color: #18A0FB;
+    }
+
+    .btn-icon:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .data-source-info {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: #F8F8F8;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #8C8C8C;
+      display: none;
+    }
+
+    .data-source-info.active {
+      display: block;
+    }
+
+    .data-source-info strong {
+      color: #333;
+    }
   </style>
 </head>
 <body>
+  <!-- Global Drop Overlay -->
+  <div id="globalDropOverlay">
+    <div class="drop-placeholder">
+      <div class="drop-placeholder-icon">📁</div>
+      <div class="drop-placeholder-text">Drop CSV file here</div>
+      <div class="drop-placeholder-subtext">Release to upload to data sources</div>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title" id="previewModalTitle">CSV Preview</span>
+        <button class="modal-close" onclick="closePreviewModal()">×</button>
+      </div>
+      <div class="modal-body" id="previewModalBody">
+        <!-- Preview content will be inserted here -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closePreviewModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title">Delete Data Source</span>
+        <button class="modal-close" onclick="closeDeleteModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 12px; color: #333; margin-bottom: 12px;">
+          Are you sure you want to delete this CSV data source? This action cannot be undone.
+        </p>
+        <div style="padding: 12px; background: #FDF2F2; border-radius: 4px; border: 1px solid #E5E5E5;">
+          <div style="font-size: 11px; color: #8C8C8C; margin-bottom: 4px;">File:</div>
+          <div style="font-size: 12px; font-weight: 600; color: #E74C3C;" id="deleteFileName"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn-primary" style="background: #E74C3C; border-color: #E74C3C;" onmouseover="this.style.background='#C0392B'" onmouseout="this.style.background='#E74C3C'" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Tabs -->
   <div class="tabs">
     <button class="tab active" data-tab="generate">Generate</button>
-    <button class="tab" data-tab="data">Data</button>
+    <button class="tab" data-tab="sources">Data Sources</button>
     <button class="tab" data-tab="about">About</button>
   </div>
 
@@ -341,6 +710,20 @@
   <div class="section">
     <div class="step" id="step2">
       <span class="step-number">2</span>
+      <span>Select data source</span>
+    </div>
+    <div class="data-source-selector">
+      <select id="dataSourceSelect" disabled>
+        <option value="">No data sources available</option>
+      </select>
+      <button class="btn-icon" id="previewDataBtn" disabled>Preview</button>
+    </div>
+    <div id="dataSourceInfo" class="data-source-info"></div>
+  </div>
+
+  <div class="section">
+    <div class="step" id="step3">
+      <span class="step-number">3</span>
       <span>Generate instances</span>
     </div>
     <button class="btn-primary" id="generateBtn" disabled>Generate Instances</button>
@@ -357,21 +740,29 @@
   </div>
   </div>
 
-  <!-- Data Tab -->
-  <div class="tab-content" id="data-tab">
-    <h2>CSV Data</h2>
-    
+  <!-- Data Sources Tab -->
+  <div class="tab-content" id="sources-tab">
+    <h2>Data Sources</h2>
+
     <div class="section">
+      <p style="font-size: 12px; color: #666; margin-bottom: 12px;">
+        Manage your CSV files. Drag and drop anywhere to upload, or click the button below.
+      </p>
+
       <div class="file-upload">
         <input type="file" id="csvFile" accept=".csv" />
         <label for="csvFile" class="file-label" id="dropZone">
-          📁 Click to upload or drag & drop CSV file
+          📁 Click to upload CSV file
         </label>
       </div>
-      <div id="fileInfo"></div>
     </div>
-    
-    <div id="dataPreviewFull"></div>
+
+    <div class="section">
+      <h2 style="margin-top: 8px;">Stored Data Sources</h2>
+      <div id="csvSourcesList" class="data-sources-list">
+        <!-- CSV items will be inserted here -->
+      </div>
+    </div>
   </div>
 
   <!-- About Tab -->
@@ -458,6 +849,9 @@
   <script>
     let csvData = null;
     let componentSelected = false;
+    let storedCsvSources = [];
+    let currentDeleteId = null;
+    let currentSelectedSource = null;
 
     // Tab switching
     const tabs = document.querySelectorAll('.tab');
@@ -483,13 +877,52 @@
     const generateBtn = document.getElementById('generateBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const componentInfo = document.getElementById('componentInfo');
-    const fileInfo = document.getElementById('fileInfo');
-    const dataPreviewFull = document.getElementById('dataPreviewFull');
     const status = document.getElementById('status');
+    const globalDropOverlay = document.getElementById('globalDropOverlay');
+    const csvSourcesList = document.getElementById('csvSourcesList');
+    const dataSourceSelect = document.getElementById('dataSourceSelect');
+    const previewDataBtn = document.getElementById('previewDataBtn');
+    const dataSourceInfo = document.getElementById('dataSourceInfo');
 
     // Select component
     selectComponentBtn.addEventListener('click', () => {
       parent.postMessage({ pluginMessage: { type: 'select-component' } }, '*');
+    });
+
+    // Data source selection
+    dataSourceSelect.addEventListener('change', (e) => {
+      const selectedId = e.target.value;
+      if (selectedId) {
+        const source = storedCsvSources.find(s => s.id === selectedId);
+        if (source) {
+          csvData = source.csvData;
+          currentSelectedSource = selectedId;
+          updateGenerateButton();
+          displayDataSourceInfo(source);
+          document.getElementById('step2').classList.add('completed');
+          document.getElementById('step3').classList.add('active');
+          previewDataBtn.disabled = false;
+        }
+      } else {
+        csvData = null;
+        currentSelectedSource = null;
+        updateGenerateButton();
+        dataSourceInfo.classList.remove('active');
+        document.getElementById('step2').classList.remove('completed');
+        document.getElementById('step3').classList.remove('active');
+        previewDataBtn.disabled = true;
+      }
+    });
+
+    // Preview data source
+    previewDataBtn.addEventListener('click', () => {
+      const selectedId = dataSourceSelect.value;
+      if (selectedId) {
+        const source = storedCsvSources.find(s => s.id === selectedId);
+        if (source) {
+          displayPreview(source);
+        }
+      }
     });
 
     // Handle CSV file upload
@@ -500,7 +933,7 @@
       }
     });
 
-    // Drag and drop handlers
+    // Drag and drop handlers for drop zone
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -517,12 +950,51 @@
       e.preventDefault();
       e.stopPropagation();
       dropZone.classList.remove('drag-over');
-      
+
       const files = e.dataTransfer.files;
       if (files.length > 0) {
         const file = files[0];
         if (file.name.endsWith('.csv')) {
-          handleFile(file);
+          handleFile(file, true); // true = store the CSV
+        } else {
+          showStatus('error', 'Please drop a CSV file');
+        }
+      }
+    });
+
+    // Global drag and drop handlers
+    let dragCounter = 0;
+
+    document.body.addEventListener('dragenter', (e) => {
+      e.preventDefault();
+      dragCounter++;
+      if (dragCounter === 1) {
+        globalDropOverlay.classList.add('active');
+      }
+    });
+
+    document.body.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dragCounter--;
+      if (dragCounter === 0) {
+        globalDropOverlay.classList.remove('active');
+      }
+    });
+
+    document.body.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    document.body.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dragCounter = 0;
+      globalDropOverlay.classList.remove('active');
+
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        if (file.name.endsWith('.csv')) {
+          handleFile(file, true); // true = store the CSV
         } else {
           showStatus('error', 'Please drop a CSV file');
         }
@@ -530,30 +1002,33 @@
     });
 
     // Handle file processing
-    function handleFile(file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const csv = event.target.result;
-          csvData = parseCSV(csv);
-          
-          if (csvData && csvData.length > 0) {
-            document.getElementById('step2').classList.remove('active');
-            fileInfo.innerHTML = `
-              <div class="file-info">
-                <strong>File loaded:</strong>
-                ${file.name}<br>
-                ${csvData.length - 1} data rows (${csvData[0].length} columns)
-              </div>
-            `;
-            
-            displayFullDataPreview(csvData);
-            updateGenerateButton();
-            
-            // Switch to Data tab to show the uploaded data
+    function handleFile(file, shouldStore = true) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const csv = event.target.result;
+        const parsedData = parseCSV(csv);
+
+        if (parsedData && parsedData.length > 0) {
+          if (shouldStore) {
+            // Store the CSV in the backend
+            parent.postMessage({
+              pluginMessage: {
+                type: 'store-csv',
+                name: file.name,
+                csvData: parsedData
+              }
+            }, '*');
+
+            // Switch to Data Sources tab
             tabs.forEach(t => t.classList.remove('active'));
             tabContents.forEach(tc => tc.classList.remove('active'));
             tabs[1].classList.add('active');
-            document.getElementById('data-tab').classList.add('active');
+            document.getElementById('sources-tab').classList.add('active');
+          } else {
+            // Just load the CSV for immediate use (backwards compatibility)
+            csvData = parsedData;
+            updateGenerateButton();
+          }
         } else {
           showStatus('error', 'Invalid CSV file');
         }
@@ -612,26 +1087,197 @@
       return result;
     }
 
-    // Display full CSV preview in Data tab
-    function displayFullDataPreview(data) {
-      if (data.length === 0) {
-        dataPreviewFull.innerHTML = '<p style="color: #999; font-size: 12px; text-align: center; padding: 40px 0;">No data loaded. Upload a CSV file in the Generate tab.</p>';
+    // Populate data source dropdown
+    function populateDataSourceDropdown() {
+      dataSourceSelect.innerHTML = '';
+
+      if (storedCsvSources.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'No data sources available';
+        dataSourceSelect.appendChild(option);
+        dataSourceSelect.disabled = true;
+        previewDataBtn.disabled = true;
         return;
       }
-      
+
+      // Add placeholder option
+      const placeholderOption = document.createElement('option');
+      placeholderOption.value = '';
+      placeholderOption.textContent = 'Select a data source...';
+      dataSourceSelect.appendChild(placeholderOption);
+
+      // Add data sources (most recent first)
+      const sortedSources = [...storedCsvSources].sort((a, b) =>
+        new Date(b.createdAt) - new Date(a.createdAt)
+      );
+
+      sortedSources.forEach(source => {
+        const option = document.createElement('option');
+        option.value = source.id;
+        option.textContent = `${source.name} (${source.rowCount} rows)`;
+        dataSourceSelect.appendChild(option);
+      });
+
+      dataSourceSelect.disabled = false;
+
+      // Auto-select if there's a current selection
+      if (currentSelectedSource) {
+        dataSourceSelect.value = currentSelectedSource;
+        const source = storedCsvSources.find(s => s.id === currentSelectedSource);
+        if (source) {
+          displayDataSourceInfo(source);
+        }
+      }
+
+      // Enable/disable preview button based on selection
+      previewDataBtn.disabled = !dataSourceSelect.value;
+    }
+
+    // Display data source info
+    function displayDataSourceInfo(source) {
+      if (!source) {
+        dataSourceInfo.classList.remove('active');
+        return;
+      }
+
+      dataSourceInfo.innerHTML = `
+        <strong>${source.name}</strong> •
+        ${source.rowCount} rows × ${source.columnCount} columns
+        ${source.createdAt ? ' • ' + new Date(source.createdAt).toLocaleDateString() : ''}
+      `;
+      dataSourceInfo.classList.add('active');
+    }
+
+    // Render CSV sources list
+    function renderCsvSourcesList() {
+      if (storedCsvSources.length === 0) {
+        csvSourcesList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📂</div>
+            <div class="empty-state-text">No data sources yet</div>
+            <div class="empty-state-subtext">Upload a CSV file to get started</div>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      storedCsvSources.forEach(source => {
+        const isSelected = currentSelectedSource === source.id;
+        html += `
+          <div class="csv-item ${isSelected ? 'selected' : ''}" data-id="${source.id}">
+            <div class="csv-info">
+              <div class="csv-name">${source.name}</div>
+              <div class="csv-meta">
+                ${source.rowCount} rows × ${source.columnCount} columns
+                ${source.createdAt ? '• ' + new Date(source.createdAt).toLocaleDateString() : ''}
+              </div>
+            </div>
+            <div class="csv-actions">
+              <button class="btn-small" onclick="previewCsv('${source.id}')">Preview</button>
+              <button class="btn-small primary" onclick="useCsv('${source.id}')">Use</button>
+              <button class="btn-small danger" onclick="deleteCsv('${source.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+
+      csvSourcesList.innerHTML = html;
+    }
+
+    // Preview CSV
+    function previewCsv(id) {
+      parent.postMessage({
+        pluginMessage: {
+          type: 'preview-csv',
+          id: id
+        }
+      }, '*');
+    }
+
+    // Use CSV for generation
+    function useCsv(id) {
+      const source = storedCsvSources.find(s => s.id === id);
+      if (source) {
+        csvData = source.csvData;
+        currentSelectedSource = id;
+        updateGenerateButton();
+        renderCsvSourcesList();
+
+        // Update dropdown and display info
+        dataSourceSelect.value = id;
+        displayDataSourceInfo(source);
+        previewDataBtn.disabled = false;
+        document.getElementById('step2').classList.add('completed');
+        document.getElementById('step3').classList.add('active');
+
+        showStatus('success', `✓ Using: ${source.name}`);
+
+        // Switch to Generate tab
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(tc => tc.classList.remove('active'));
+        tabs[0].classList.add('active');
+        document.getElementById('generate-tab').classList.add('active');
+      }
+    }
+
+    // Delete CSV
+    function deleteCsv(id) {
+      const source = storedCsvSources.find(s => s.id === id);
+      if (source) {
+        currentDeleteId = id;
+        document.getElementById('deleteFileName').textContent = source.name;
+        document.getElementById('deleteModal').classList.add('active');
+      }
+    }
+
+    // Confirm delete
+    function confirmDelete() {
+      if (currentDeleteId) {
+        parent.postMessage({
+          pluginMessage: {
+            type: 'delete-csv',
+            id: currentDeleteId
+          }
+        }, '*');
+        closeDeleteModal();
+      }
+    }
+
+    // Close delete modal
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+      currentDeleteId = null;
+    }
+
+    // Close preview modal
+    function closePreviewModal() {
+      document.getElementById('previewModal').classList.remove('active');
+    }
+
+    // Display preview in modal
+    function displayPreview(source) {
+      const data = source.csvData;
+      if (!data || data.length === 0) {
+        return;
+      }
+
+      document.getElementById('previewModalTitle').textContent = source.name;
+
       const headers = data[0];
       const dataRows = data.slice(1);
-      
+
       let html = `<div style="margin-bottom: 12px; font-size: 11px; color: #666;">
         <strong style="color: #000;">${dataRows.length}</strong> rows × <strong style="color: #000;">${headers.length}</strong> columns
       </div>`;
-      
-      html += '<div class="csv-preview" style="max-height: calc(100vh - 140px);"><table><thead><tr>';
+
+      html += '<div class="csv-preview" style="max-height: 400px;"><table><thead><tr>';
       headers.forEach(header => {
         html += `<th>${header}</th>`;
       });
       html += '</tr></thead><tbody>';
-      
+
       dataRows.forEach(row => {
         html += '<tr>';
         row.forEach(cell => {
@@ -639,10 +1285,11 @@
         });
         html += '</tr>';
       });
-      
+
       html += '</tbody></table></div>';
-      
-      dataPreviewFull.innerHTML = html;
+
+      document.getElementById('previewModalBody').innerHTML = html;
+      document.getElementById('previewModal').classList.add('active');
     }
 
     // Update generate button state
@@ -663,13 +1310,17 @@
       status.innerHTML = `<div class="status ${type}">${message}</div>`;
     }
 
-    // Initialize data preview
-    displayFullDataPreview([]);
+    // Initialize
+    renderCsvSourcesList();
+    populateDataSourceDropdown();
+
+    // Request stored CSV list on load
+    parent.postMessage({ pluginMessage: { type: 'list-csvs' } }, '*');
 
     // Listen for messages from plugin code
     window.onmessage = (event) => {
       const msg = event.data.pluginMessage;
-      
+
       if (msg.type === 'component-selected') {
         componentSelected = true;
         document.getElementById('step1').classList.add('completed');
@@ -682,18 +1333,63 @@
         `;
         updateGenerateButton();
       }
-      
+
       if (msg.type === 'component-error') {
         showStatus('error', msg.message);
       }
-      
+
       if (msg.type === 'generation-complete') {
         document.getElementById('step2').classList.add('completed');
         showStatus('success', `✓ Successfully created ${msg.count - 1} instances!`);
       }
-      
+
       if (msg.type === 'generation-error') {
         showStatus('error', msg.message);
+      }
+
+      // CSV storage messages
+      if (msg.type === 'csv-stored') {
+        showStatus('success', '✓ CSV file stored successfully!');
+        // Store the new ID to auto-select it
+        const newCsvId = msg.id;
+        // Request updated list
+        parent.postMessage({ pluginMessage: { type: 'list-csvs', autoSelectId: newCsvId } }, '*');
+      }
+
+      if (msg.type === 'csv-list') {
+        storedCsvSources = msg.list || [];
+        renderCsvSourcesList();
+        populateDataSourceDropdown();
+
+        // Auto-select the most recent CSV if requested
+        if (msg.autoSelectId) {
+          const source = storedCsvSources.find(s => s.id === msg.autoSelectId);
+          if (source) {
+            dataSourceSelect.value = msg.autoSelectId;
+            csvData = source.csvData;
+            currentSelectedSource = msg.autoSelectId;
+            updateGenerateButton();
+            displayDataSourceInfo(source);
+            document.getElementById('step2').classList.add('completed');
+            document.getElementById('step3').classList.add('active');
+            previewDataBtn.disabled = false;
+          }
+        }
+      }
+
+      if (msg.type === 'csv-deleted') {
+        showStatus('success', '✓ CSV file deleted');
+        if (currentSelectedSource === currentDeleteId) {
+          csvData = null;
+          currentSelectedSource = null;
+          updateGenerateButton();
+        }
+        // Request updated list
+        parent.postMessage({ pluginMessage: { type: 'list-csvs' } }, '*');
+      }
+
+      if (msg.type === 'csv-preview') {
+        displayPreview(msg.source);
       }
     };
   </script>
