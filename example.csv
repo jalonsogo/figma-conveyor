@@ -1,6 +1,6 @@
-Name,Email,Role,Status
-John Doe,john@example.com,Designer,Active
-Jane Smith,jane@example.com,Developer,Active
-Bob Johnson,bob@example.com,Manager,Inactive
-Alice Williams,alice@example.com,Designer,Active
-Charlie Brown,charlie@example.com,Developer,Active
+Name,Email,Role,Status,Active,Premium
+John Doe,john@example.com,Designer,Full-time,true,yes
+Jane Smith,jane@example.com,Developer,Full-time,1,on
+Bob Johnson,bob@example.com,Manager,Part-time,false,no
+Alice Williams,alice@example.com,Designer,Full-time,yes,enabled
+Charlie Brown,charlie@example.com,Developer,Contract,active,1

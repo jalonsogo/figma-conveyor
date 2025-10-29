@@ -2,7 +2,7 @@
 
 A powerful Figma plugin that automates the creation of component instances from CSV data. Perfect for generating design variations, populating mockups with real data, or batch-creating elements with different content.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
 ![Figma](https://img.shields.io/badge/Figma-Plugin-ff7262)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -10,7 +10,8 @@ A powerful Figma plugin that automates the creation of component instances from 
 
 - 📦 **Component Support** - Works with components, component sets, and instances
 - 📄 **CSV Import** - Upload CSV files via click or drag & drop
-- 🔄 **Automatic Mapping** - Matches CSV columns to component text properties and text layers by name
+- 🔄 **Automatic Mapping** - Matches CSV columns to component text and boolean properties by name
+- 🔘 **Boolean Support** - Automatically converts CSV values to boolean properties (true/false, yes/no, 1/0, etc.)
 - 🎨 **Smart Layout** - Arranges instances vertically with proper spacing
 - 👀 **Live Preview** - Preview your CSV data before generating instances
 - 🎯 **Three-Tab Interface** - Clean, organized UI for Generate, Data, and About
@@ -30,27 +31,32 @@ A powerful Figma plugin that automates the creation of component instances from 
 
 #### 1. Prepare Your Component
 
-Create a Figma component with text properties or text layers. Name them to match your CSV column headers.
+Create a Figma component with text and/or boolean properties. Name them to match your CSV column headers.
 
 **Example Component:**
-- Text property/layer: `Name`
-- Text property/layer: `Email`
-- Text property/layer: `Role`
-- Text property/layer: `Status`
+- Text property: `Name`
+- Text property: `Email`
+- Text property: `Role`
+- Boolean property: `Active`
+- Boolean property: `Premium`
 
-> 💡 **Tip:** Component text properties (exposed properties) are recommended for easier instance customization.
+> 💡 **Tip:** Component properties (exposed properties) are recommended for easier instance customization.
 
 #### 2. Prepare Your CSV File
 
-Create a CSV file with headers in the first row that match your component property/layer names.
+Create a CSV file with headers in the first row that match your component property names.
 
 ```csv
-Name,Email,Role,Status
-John Doe,john@example.com,Designer,Active
-Jane Smith,jane@example.com,Developer,Active
-Bob Johnson,bob@example.com,Manager,Inactive
-Alice Williams,alice@example.com,Designer,Active
+Name,Email,Role,Active,Premium
+John Doe,john@example.com,Designer,true,yes
+Jane Smith,jane@example.com,Developer,1,on
+Bob Johnson,bob@example.com,Manager,false,no
 ```
+
+**Boolean Values:**
+The plugin accepts multiple formats for boolean values:
+- **TRUE:** `true`, `yes`, `1`, `on`, `enabled`, `active` (case-insensitive)
+- **FALSE:** `false`, `no`, `0`, `off`, `disabled`, `inactive` (case-insensitive)
 
 See `example.csv` for a sample file.
 
@@ -70,19 +76,30 @@ Done! 🎉 The plugin creates one instance per CSV row with all text content pop
 
 The plugin uses intelligent name-based matching:
 
-1. **Component Text Properties** - If your component has exposed text properties, they're matched with CSV column headers
-2. **Text Layer Names** - Text layers in the component are matched with CSV column headers
-3. **Case-Insensitive** - Matching works regardless of case (e.g., "name" matches "Name")
-4. **Column Order Independent** - Column order in CSV doesn't matter, only names need to match
+1. **Component Text Properties** - Text properties are matched with CSV column headers containing text values
+2. **Component Boolean Properties** - Boolean properties are matched with CSV column headers containing boolean values
+3. **Text Layer Names** - Text layers in the component are matched with CSV column headers
+4. **Case-Insensitive** - Matching works regardless of case (e.g., "name" matches "Name")
+5. **Column Order Independent** - Column order in CSV doesn't matter, only names need to match
+
+### Boolean Value Parsing
+
+The plugin automatically converts string values from CSV to boolean:
+
+**Accepted TRUE values:** `true`, `yes`, `1`, `on`, `enabled`, `active`  
+**Accepted FALSE values:** `false`, `no`, `0`, `off`, `disabled`, `inactive`
+
+All values are case-insensitive, so `TRUE`, `True`, and `true` all work.
 
 ### Example Mapping
 
-| CSV Column | Component Property/Layer | Result |
-|------------|-------------------------|---------|
-| Name | "Name" | ✅ Matched |
-| email | "Email" | ✅ Matched (case-insensitive) |
-| ROLE | "Role" | ✅ Matched (case-insensitive) |
-| Status | "Description" | ❌ Not matched (different names) |
+| CSV Column | Component Property | Type | CSV Value | Result |
+|------------|-------------------|------|-----------|--------|
+| Name | "Name" | TEXT | "John Doe" | ✅ Matched & Updated |
+| email | "Email" | TEXT | "john@example.com" | ✅ Matched (case-insensitive) |
+| Active | "Active" | BOOLEAN | "yes" | ✅ Converted to true |
+| Premium | "Premium" | BOOLEAN | "1" | ✅ Converted to true |
+| Status | "Description" | TEXT | "Active" | ❌ Not matched (different names) |
 
 ## 📋 Plugin Interface
 
@@ -106,33 +123,38 @@ The plugin uses intelligent name-based matching:
 - **API Version:** Figma Plugin API 1.0.0
 - **No Network Access** - All processing is local
 - **Supported Node Types:** Components, component sets, instances
+- **Supported Property Types:** TEXT, BOOLEAN
 - **Font Handling:** Automatic font loading for text updates
 - **CSV Parsing:** Handles quoted values, commas in fields, empty cells
+- **Boolean Parsing:** Flexible parsing with multiple accepted formats
 
 ## 📝 CSV Format Requirements
 
 - First row must contain column headers
-- Headers should match component text property/layer names (case-insensitive)
+- Headers should match component property names (case-insensitive)
 - Supports quoted values with commas: `"Last, First"`
 - Empty cells are supported and will be skipped
 - UTF-8 encoding recommended
+- Boolean columns can use any accepted format (see Boolean Value Parsing above)
 
 ## 💡 Tips & Best Practices
 
 ### For Best Results
 
-1. **Use Component Text Properties** - Expose text properties in your component for easier instance management
+1. **Use Component Properties** - Expose text and boolean properties in your component for easier instance management
 2. **Name Consistently** - Use the same naming convention in both CSV and component
-3. **Test with Small Data First** - Try with 2-3 rows before processing large datasets
-4. **Keep Backup** - The plugin supports undo (Cmd/Ctrl + Z), but save your work first
+3. **Boolean Formats** - Use any accepted boolean format (true/false, yes/no, 1/0, etc.)
+4. **Test with Small Data First** - Try with 2-3 rows before processing large datasets
+5. **Keep Backup** - The plugin supports undo (Cmd/Ctrl + Z), but save your work first
 
 ### Common Use Cases
 
-- **User Cards** - Generate user profile cards with names, emails, avatars
-- **Product Lists** - Create product cards with titles, descriptions, prices
-- **Team Directories** - Build team member cards with roles and contact info
-- **Data Visualization** - Populate charts and graphs with real data
-- **A/B Testing** - Create multiple variations of designs quickly
+- **User Cards** - Generate user profile cards with names, emails, avatars, and active status
+- **Product Lists** - Create product cards with titles, descriptions, prices, and availability flags
+- **Team Directories** - Build team member cards with roles, contact info, and online status
+- **Feature Flags** - Design UI with toggleable features (enabled/disabled states)
+- **A/B Testing** - Create multiple variations of designs with different boolean states
+- **Status Indicators** - Generate elements with active/inactive, on/off states
 
 ## 🐛 Troubleshooting
 
@@ -145,6 +167,13 @@ The plugin uses intelligent name-based matching:
 - Check spelling and capitalization (matching is case-insensitive but names must match)
 - Ensure CSV file has proper headers in first row
 - Verify the component has text properties or text layers
+
+### Boolean Properties Not Updating
+**Possible causes:**
+- Property in component is not set as BOOLEAN type
+- CSV value format not recognized - use: true/false, yes/no, 1/0, on/off, etc.
+- Property name doesn't match CSV header (case-insensitive)
+- Check that the component property is exposed
 
 ### Font Errors
 **Solution:** The plugin attempts to load fonts automatically. If you encounter font errors:
@@ -183,7 +212,8 @@ csv-instance-generator/
 **code.js**
 - Main plugin logic running in Figma's sandbox
 - Handles component selection and instance creation
-- Manages text layer updates and font loading
+- Manages text and boolean property updates
+- Font loading for text layers
 - Communicates with UI via postMessage
 
 **ui.html**
@@ -247,10 +277,11 @@ If you encounter issues or have questions:
 
 Future enhancements under consideration:
 
+- [x] Support for boolean properties
 - [ ] Support for image URLs in CSV (populate image layers)
+- [ ] Support for variant properties
 - [ ] Custom spacing and layout options
 - [ ] Export instances back to CSV
-- [ ] Support for boolean properties and variants
 - [ ] Batch operations (update existing instances)
 - [ ] Excel file support (.xlsx)
 - [ ] Template saving and reuse
@@ -263,4 +294,4 @@ Built with the Figma Plugin API and modern web technologies.
 
 **Made with ❤️ for the Figma community**
 
-*Version 1.0.0 - 2025*
+*Version 1.1.0 - 2025*

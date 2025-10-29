@@ -116,36 +116,49 @@ async function generateInstances(component, csvData) {
 }
 
 async function updateTextLayers(node, headers, rowData) {
-  // First, try to match component properties (text properties) with CSV headers
+  // First, try to match component properties with CSV headers
   if (node.type === 'INSTANCE' && 'componentProperties' in node) {
     const componentProps = node.componentProperties;
+    const mainComponent = node.mainComponent;
     
-    // Iterate through component properties
-    for (const [propKey, propValue] of Object.entries(componentProps)) {
-      // Check if this is a text property
-      if (propValue && typeof propValue === 'object' && 'type' in propValue && propValue.type === 'TEXT') {
-        // Get the property name (visible name in Figma)
-        const mainComponent = node.mainComponent;
-        if (mainComponent && 'componentPropertyDefinitions' in mainComponent) {
-          const propDef = mainComponent.componentPropertyDefinitions[propKey];
-          if (propDef && propDef.type === 'TEXT') {
-            const propName = propDef.name;
-            
-            // Find matching CSV column (case-insensitive)
-            const headerIndex = headers.findIndex(header => 
-              header && propName && header.toLowerCase().trim() === propName.toLowerCase().trim()
-            );
-            
-            if (headerIndex !== -1 && rowData[headerIndex] !== undefined && rowData[headerIndex] !== null) {
-              try {
-                node.setProperties({
-                  [propKey]: String(rowData[headerIndex])
-                });
-              } catch (error) {
-                console.error(`Error updating component property ${propName}:`, error);
-              }
-            }
+    if (mainComponent && 'componentPropertyDefinitions' in mainComponent) {
+      const propDefs = mainComponent.componentPropertyDefinitions;
+      
+      // Iterate through component properties
+      for (const [propKey, propValue] of Object.entries(componentProps)) {
+        if (!propValue || typeof propValue !== 'object' || !('type' in propValue)) continue;
+        
+        const propDef = propDefs[propKey];
+        if (!propDef) continue;
+        
+        const propName = propDef.name;
+        
+        // Find matching CSV column (case-insensitive)
+        const headerIndex = headers.findIndex(header => 
+          header && propName && header.toLowerCase().trim() === propName.toLowerCase().trim()
+        );
+        
+        if (headerIndex === -1 || rowData[headerIndex] === undefined || rowData[headerIndex] === null) continue;
+        
+        const cellValue = String(rowData[headerIndex]).trim();
+        
+        try {
+          // Handle TEXT properties
+          if (propValue.type === 'TEXT' && propDef.type === 'TEXT') {
+            node.setProperties({
+              [propKey]: cellValue
+            });
           }
+          // Handle BOOLEAN properties
+          else if (propValue.type === 'BOOLEAN' && propDef.type === 'BOOLEAN') {
+            // Convert string to boolean
+            const boolValue = parseBooleanValue(cellValue);
+            node.setProperties({
+              [propKey]: boolValue
+            });
+          }
+        } catch (error) {
+          console.error(`Error updating component property ${propName}:`, error);
         }
       }
     }
@@ -179,4 +192,24 @@ async function updateTextLayers(node, headers, rowData) {
   };
   
   await updateNode(node);
+}
+
+// Parse boolean values from CSV strings
+function parseBooleanValue(value) {
+  const lowerValue = value.toLowerCase();
+  
+  // True values
+  if (lowerValue === 'true' || lowerValue === 'yes' || lowerValue === '1' || 
+      lowerValue === 'on' || lowerValue === 'enabled' || lowerValue === 'active') {
+    return true;
+  }
+  
+  // False values
+  if (lowerValue === 'false' || lowerValue === 'no' || lowerValue === '0' || 
+      lowerValue === 'off' || lowerValue === 'disabled' || lowerValue === 'inactive') {
+    return false;
+  }
+  
+  // Default to false for unrecognized values
+  return false;
 }
