@@ -1,5 +1,6 @@
 # Conveyor - Figma CSV Instance Generator
 
+![alt text](cover.png)
 **Version:** 1.1.0
 
 Conveyor is a powerful Figma plugin that automates the creation of component instances from CSV data. Perfect for generating design variations, populating mockups with real data, or batch-creating elements with different content.
